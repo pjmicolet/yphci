@@ -10,7 +10,6 @@ public class SidePanel {
 	private JPanel bottom_panel = new JPanel();
 
 	public SidePanel(){
-		initUI();
 	}
 	
 	public final void initUI(){
