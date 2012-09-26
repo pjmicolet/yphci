@@ -24,7 +24,4 @@ public class SidePanel {
 		return top_panel;
 	}
 	
-	public JPanel getTopPanel(){
-		return top_panel;
-	}
 }
