@@ -2,8 +2,9 @@ package com.functionality;
 
 import javax.swing.JFrame;
 
-import com.gui.MainPanel;
-import com.gui.SidePanel;
+import com.gui.MainFrame;
+import com.gui.SideFrame;
+import com.utils.PolygonFunctions;
 
 
 public class Main {
@@ -15,20 +16,14 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		toolsFrame = new JFrame("Tools");
-		imageFrame = new JFrame("Image");
 		
-		toolsFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		imageFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		PolygonFunctions pf = new PolygonFunctions();
+		String test = "/afs/inf.ed.ac.uk/user/s09/s0939895/Desktop/hci-practical/images/U1003_0000.jpg";
 		
-		MainPanel mainPanel = new MainPanel();
-		SidePanel sidePanel = new SidePanel();
+		MainFrame mainFrame = new MainFrame(pf, test);
+		SideFrame sideFrame = new SideFrame(pf);
 		
-		imageFrame.setContentPane(mainPanel);
-		toolsFrame.setContentPane(sidePanel);
-		
-		imageFrame.setVisible(true);
-		toolsFrame.setVisible(true);
+		mainFrame.setVisible(true);
+		sideFrame.setVisible(true);
 	}
 }
