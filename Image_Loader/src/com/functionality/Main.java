@@ -2,7 +2,8 @@ package com.functionality;
 
 import javax.swing.SwingUtilities;
 
-import com.gui.MainWindow;
+import com.gui.MainPanel;
+import com.gui.SidePanel;
 
 
 public class Main {
@@ -18,8 +19,8 @@ public class Main {
 			
 			public void run() {
 				// TODO Auto-generated method stub
-				MainWindow mw = new MainWindow();
-				mw.setVisible(true);
+				SidePanel sp = new SidePanel();
+				sp.setVisible(true);
 			}
 		});
 	}
