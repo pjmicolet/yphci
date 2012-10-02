@@ -2,8 +2,8 @@ package com.functionality;
 
 import javax.swing.JFrame;
 
-import com.gui.MainPanel;
-import com.gui.SidePanel;
+import com.gui.MainFrame;
+import com.gui.SideFrame;
 
 
 public class Main {
@@ -22,13 +22,13 @@ public class Main {
 		toolsFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		imageFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		MainPanel mainPanel = new MainPanel();
-		SidePanel sidePanel = new SidePanel();
+		MainFrame mainFrame = new MainFrame("/afs/inf.ed.ac.uk/user/s09/s0939895/Desktop/hci-practical/images/U1003_0000.jpg");
+		SideFrame sideFrame = new SideFrame();
 		
-		imageFrame.setContentPane(mainPanel);
-		toolsFrame.setContentPane(sidePanel);
+		//imageFrame.setContentPane(mainPanel);
+		//toolsFrame.setContentPane(sidePanel);
 		
-		imageFrame.setVisible(true);
-		toolsFrame.setVisible(true);
+		mainFrame.setVisible(true);
+		sideFrame.setVisible(true);
 	}
 }
