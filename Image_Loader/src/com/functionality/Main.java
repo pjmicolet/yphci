@@ -3,8 +3,6 @@ package com.functionality;
 import javax.swing.JFrame;
 
 import com.gui.MainFrame;
-import com.gui.SideFrame;
-
 
 public class Main {
 
@@ -16,19 +14,11 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		toolsFrame = new JFrame("Tools");
-		imageFrame = new JFrame("Image");
 		
-		toolsFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		imageFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		MainFrame mainFrame = new MainFrame("C:\\Users\\Yordan\\Desktop\\arthurs_seat_edinburgh.jpg");
-		SideFrame sideFrame = new SideFrame();
+		MainFrame mainFrame = new MainFrame("/Users/paul-julesmicolet/Pictures/4chanfile/1348777794239.jpeg");
 		
 		//imageFrame.setContentPane(mainPanel);
 		//toolsFrame.setContentPane(sidePanel);
-		
 		mainFrame.setVisible(true);
-		sideFrame.setVisible(true);
 	}
 }
