@@ -11,7 +11,7 @@ import javax.swing.JPanel;
 
 
 public class MainPanel extends JPanel  {
-	
+
 	/**
 	 * 
 	 */
@@ -28,7 +28,7 @@ public class MainPanel extends JPanel  {
 		this.setPreferredSize(panelSize);
 		this.setMaximumSize(panelSize);
 		}
-	
+
 	/**
 	 * extended constructor - loads image to be labelled
 	 * @param imageName - path to image
@@ -46,23 +46,23 @@ public class MainPanel extends JPanel  {
 			image.getGraphics().drawImage(scaledImage, 0, 0, this);
 		}
 	}
-	
+
 	/**
 	 * Displays the image
 	 */
 	public void ShowImage() {
 		Graphics g = this.getGraphics();
-		
+
 		if (image != null) {
 			g.drawImage(
 					image, 0, 0, null);
 		}
 	}
-	
+
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
-		
+
 		//display iamge
 		ShowImage();
 	}

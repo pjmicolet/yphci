@@ -10,7 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class MainFrame extends JFrame {
-	
+
 	/**
 	 * 
 	 */
@@ -20,7 +20,7 @@ public class MainFrame extends JFrame {
 	 * main window panel
 	 */
 	JPanel appPanel = null;
-	
+
 	/**
 	 * image panel - displays image and editing area
 	 */
@@ -33,7 +33,7 @@ public class MainFrame extends JFrame {
 		super.paint(g);
 		imagePanel.paint(g); //update image panel
 	}
-	
+
 	/**
 	 * sets up application window
 	 * @param imageFilename image to be loaded for editing
@@ -53,7 +53,7 @@ public class MainFrame extends JFrame {
 		appPanel = new JPanel();
 		this.setLayout(new BoxLayout(appPanel, BoxLayout.X_AXIS));
 		this.setContentPane(appPanel);
-		
+
         //Create and set up the image panel.
 		imagePanel = new MainPanel(imageFilename);
 		imagePanel.setOpaque(true); //content panes must be opaque
@@ -64,7 +64,7 @@ public class MainFrame extends JFrame {
 		this.pack();
         this.setVisible(true);
 	}
-	
+
 	/**
 	 * Runs the program
 	 * @param argv path to an image
