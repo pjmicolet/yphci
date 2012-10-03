@@ -23,6 +23,7 @@ public class Main {
 		imageFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		MainFrame mainFrame = new MainFrame("/afs/inf.ed.ac.uk/user/s09/s0939834/hci-practical/images/U1003_0000.jpg");
+
 		SideFrame sideFrame = new SideFrame();
 
 		//imageFrame.setContentPane(mainPanel);
