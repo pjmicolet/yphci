@@ -9,6 +9,9 @@ public class ImageLabels {
 	
 	private PointsLabelPair currentLabel = null;
 
+	public Point startPoint = null;
+	public Point finalPoint = null;
+	
 	public ImageLabels() {
 		pointsAndLabels = new ArrayList<PointsLabelPair>();
 	}
@@ -23,5 +26,23 @@ public class ImageLabels {
 		return null;
 	}
 	
-	//public void 
+	public void addNewLabel() {
+		if (currentLabel != null) {
+			finishCurrentLabel(currentLabel);
+			pointsAndLabels.add(currentLabel);
+		}
+		
+		currentLabel = new PointsLabelPair();
+	}
+
+	public void finishCurrentLabel(PointsLabelPair currentLabel) {
+		if (currentLabel.size() >= 3) {
+			Point startPoint = currentLabel.get(0);
+			Point finalPoint = currentLabel.get(currentLabel.size() - 1);
+		}
+	}
+	
+	public PointsLabelPair getCurrentLabel() {
+		return this.currentLabel;
+	}
 }

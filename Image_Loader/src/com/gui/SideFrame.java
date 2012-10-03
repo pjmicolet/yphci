@@ -11,6 +11,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
 import com.utils.ImageLabels;
+import com.utils.PointsLabelPair;
 
 public class SideFrame extends JFrame {
 
@@ -78,4 +79,13 @@ public class SideFrame extends JFrame {
 		this.currentImageLabels = imageLabels;
 	}
 	
+	private void addNewLabel() {
+		PointsLabelPair current = currentImageLabels.getCurrentLabel();
+		
+		if (current.size() >= 3) {
+			currentImageLabels.finishCurrentLabel(current);
+			//drawNode(currentImageLabels.startPoint, currentImageLabels.finalPoint);
+		}
+		
+	}
 }

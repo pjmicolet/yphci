@@ -7,7 +7,6 @@ public class PointsLabelPair {
 	private ArrayList<Point> points;
 	private String label;
 	
-	
 	public ArrayList<Point> getPoints() {
 		return points;
 	}
@@ -20,6 +19,10 @@ public class PointsLabelPair {
 	public void setLabel(String label) {
 		this.label = label;
 	}
-	
-	
+	public int size() {
+		return points.size();
+	}
+	public Point get(int index) {
+		return points.get(index);
+	}
 }
