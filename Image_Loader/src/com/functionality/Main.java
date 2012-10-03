@@ -22,7 +22,7 @@ public class Main {
 		toolsFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		imageFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		MainFrame mainFrame = new MainFrame("/afs/inf.ed.ac.uk/user/s09/s0939895/Desktop/hci-practical/images/U1003_0000.jpg");
+		MainFrame mainFrame = new MainFrame("C:\\Users\\Yordan\\Desktop\\arthurs_seat_edinburgh.jpg");
 		SideFrame sideFrame = new SideFrame();
 		
 		//imageFrame.setContentPane(mainPanel);

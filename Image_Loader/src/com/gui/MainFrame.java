@@ -44,7 +44,7 @@ public class MainFrame extends JFrame {
 		  	public void windowClosing(WindowEvent event) {
 		  		//here we exit the program (maybe we should ask if the user really wants to do it?)
 		  		//maybe we also want to store the polygons somewhere? and read them next time
-		  		System.out.println("Bye bye!");
+		  		System.out.println("Exiting...");
 		    	System.exit(0);
 		  	}
 		});

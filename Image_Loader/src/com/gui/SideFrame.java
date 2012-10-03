@@ -10,12 +10,16 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
+import com.utils.ImageLabels;
+
 public class SideFrame extends JFrame {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	private ImageLabels currentImageLabels = null;
 
 	private JMenuBar menuBar = new JMenuBar();
 	
@@ -40,7 +44,7 @@ public class SideFrame extends JFrame {
 		initSidePanel();
 	}
 
-	public final void initSidePanel()
+	private void initSidePanel()
 	{
 		menuBar.add(file);
 		file.add(newImage);
@@ -68,6 +72,10 @@ public class SideFrame extends JFrame {
 		setJMenuBar(menuBar);
 		setLocationRelativeTo(null);
 	    setDefaultCloseOperation(EXIT_ON_CLOSE);
+	}
+	
+	private void setCurrentImageLabels(ImageLabels imageLabels) {
+		this.currentImageLabels = imageLabels;
 	}
 	
 }
