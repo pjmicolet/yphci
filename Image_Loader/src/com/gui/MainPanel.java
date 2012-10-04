@@ -5,18 +5,36 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
+
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.imageio.ImageIO;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
+import com.utils.Point;
+import com.utils.UtilityFunctions;
 
-public class MainPanel extends JPanel  {
+
+public class MainPanel extends JPanel implements MouseListener  {
 
 	/**
 	 * 
 	 */
+	
+	private String imageName;
+	
 	private static final long serialVersionUID = 1L;
 	private BufferedImage image;
+	private ArrayList<Point> polygon;
+	public UtilityFunctions utility = new UtilityFunctions();
+
 
 
 	public MainPanel() {
@@ -44,8 +62,10 @@ public class MainPanel extends JPanel  {
 			Image scaledImage = image.getScaledInstance(newWidth, newHeight, Image.SCALE_FAST);
 			image = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
 			image.getGraphics().drawImage(scaledImage, 0, 0, this);
+			this.paint(image.getGraphics());
 		}
 	}
+
 
 	/**
 	 * Displays the image
@@ -66,4 +86,35 @@ public class MainPanel extends JPanel  {
 		//display iamge
 		ShowImage();
 	}
+	
+	@Override
+	public void mouseClicked(MouseEvent e)
+	{
+		int x = e.getX();
+		int y = e.getY();
+	
+		if(utility.contained(x, y, image.getWidth(), image.getHeight()))
+		{
+			
+		}
+		
+    }
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+	}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+	}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+	}
+	
+	
 }
