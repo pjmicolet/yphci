@@ -2,11 +2,12 @@ package com.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Graphics;
+import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 
-
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -15,10 +16,23 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
-
-
-
 public class MainFrame extends JFrame {
+
+	private static final long serialVersionUID = 1L;
+
+	JPanel appPanel = new JPanel();
+	
+	JPanel imagePanel = new JPanel();
+
+	JPanel toolPanel = new JPanel();
+
+	BufferedImage image = null;
+
+	private JButton newLabel = new JButton("New Label");
+	private JButton editLabel = new JButton("Edit Label");
+	private JButton deleteLabel = new JButton("Delete Label");
+	private JButton undo = new JButton("Undo");
+	private JButton redo = new JButton("Redo");
 
 	private JMenuBar menuBar = new JMenuBar();
 
@@ -28,39 +42,12 @@ public class MainFrame extends JFrame {
 	private JMenuItem loadLabel = new JMenuItem("Load Label");
 	private JMenuItem saveLabel = new JMenuItem("Save Label");
 
-	private JButton newLabel = new JButton("New Label");
-	private JButton editLabel = new JButton("Edit Label");
-	private JButton deleteLabel = new JButton("Delete Label");
-	private JButton undo = new JButton("Undo");
-	private JButton redo = new JButton("Redo");
-	
-	private JPanel sidePanel = new JPanel();
-	private JPanel undoPanel = new JPanel();
-	private JPanel overallPanel = new JPanel();
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
-	/**
-	 * main window panel
-	 */
-	JPanel appPanel = null;
-
-	/**
-	 * image panel - displays image and editing area
-	 */
-	JPanel imagePanel = null;
-	BufferedImage image = null;
-
-//	@Override
-//	public void paint(Graphics g) {
-//		super.paint(g);
-//		imagePanel.paint(g); //update image panel
-//
-//	}
-
+	@Override
+	public void paint(Graphics g) {
+		super.paint(g);
+		imagePanel.paint(g); //update image panel
+	}
 	/**
 	 * sets up application window
 	 * @param imageFilename image to be loaded for editing
@@ -76,29 +63,42 @@ public class MainFrame extends JFrame {
 		  	}
 		});
 
-		//setup main window panel
+		//Sets up the buttons.
 
+		toolPanel.setLayout(new GridLayout(0,2));
+		toolPanel.add(newLabel);
+		toolPanel.add(Box.createGlue());
+		toolPanel.add(editLabel);
+		toolPanel.add(Box.createGlue());
+		toolPanel.add(deleteLabel);
+		toolPanel.add(Box.createGlue());
+		toolPanel.add(undo);
+		toolPanel.add(redo);	
+
+		menuBar.add(file);
+		file.add(newImage);
+		file.add(loadLabel);
+		file.add(saveLabel);
+
+		//setup main window panel
 		appPanel = new JPanel();
 		this.setLayout(new BoxLayout(appPanel, BoxLayout.X_AXIS));
 		this.setContentPane(appPanel);
-		
+
         //Create and set up the image panel.
 		imagePanel = new MainPanel(imageFilename);
 		imagePanel.setOpaque(true); //content panes must be opaque
 
 		
-        initSidePanel();
-        initMenuBar();
-        
+		appPanel.add(imagePanel);
+		appPanel.add(toolPanel);
+		this.setJMenuBar(menuBar);
 
-        appPanel.add(overallPanel);
-        appPanel.add(imagePanel);
-        
-        setJMenuBar(menuBar);
-        this.pack();
+		//display all the stuff
+		this.pack();
         this.setVisible(true);
 	}
-	
+
 	/**
 	 * Runs the program
 	 * @param argv path to an image
@@ -111,38 +111,5 @@ public class MainFrame extends JFrame {
 			e.printStackTrace();
 		}
 	}
-	
-
-	public void initSidePanel()
-	{
-		
-		sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
-		newLabel.setToolTipText("Click to add new object");
-
-		sidePanel.add(newLabel);
-		sidePanel.add(editLabel);
-		sidePanel.add(deleteLabel);
-
-		undoPanel.setLayout(new BoxLayout(undoPanel, BoxLayout.X_AXIS));
-		undoPanel.add(undo);
-		undoPanel.add(redo);
-
-		overallPanel.setLayout(new BorderLayout());
-		overallPanel.add(sidePanel, BorderLayout.WEST);
-		overallPanel.add(undoPanel, BorderLayout.SOUTH);
-	}
-	
-	public void initMenuBar()
-	{
-
-		menuBar.add(file);
-		file.add(newImage);
-		file.add(loadLabel);
-		file.add(saveLabel);
-		
-		
-	}
-	
-	
 
 }
