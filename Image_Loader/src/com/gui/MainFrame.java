@@ -1,6 +1,5 @@
 package com.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
@@ -43,11 +42,7 @@ public class MainFrame extends JFrame {
 	private JMenuItem saveLabel = new JMenuItem("Save Label");
 
 
-	@Override
-	public void paint(Graphics g) {
-		super.paint(g);
-		imagePanel.paint(g); //update image panel
-	}
+
 	/**
 	 * sets up application window
 	 * @param imageFilename image to be loaded for editing
@@ -88,10 +83,9 @@ public class MainFrame extends JFrame {
         //Create and set up the image panel.
 		imagePanel = new MainPanel(imageFilename);
 		imagePanel.setOpaque(true); //content panes must be opaque
-
 		
-		appPanel.add(imagePanel);
 		appPanel.add(toolPanel);
+		appPanel.add(imagePanel);
 		this.setJMenuBar(menuBar);
 
 		//display all the stuff

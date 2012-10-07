@@ -1,6 +1,5 @@
 package com.gui;
 
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -8,6 +7,8 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 
@@ -33,7 +34,8 @@ public class MainPanel extends JPanel  {
 	public MainPanel( String imageName) throws Exception{
 		this();
 		this.imageName = imageName;
-		getImage();
+		//getImage();
+		addImage();
 	}
 
 	/**
@@ -60,17 +62,21 @@ public class MainPanel extends JPanel  {
 		}
 
 		//Dimension panelSize = new Dimension(image.getWidth(), image.getHeight());
-		Dimension panelSize = new Dimension(800, 600);
-		this.setSize(panelSize);
-		this.setMinimumSize(panelSize);
-		this.setPreferredSize(panelSize);
-		this.setMaximumSize(panelSize);
+//		Dimension panelSize = new Dimension(800, 600);
+//		this.setSize(panelSize);
+//		this.setMinimumSize(panelSize);
+//		this.setPreferredSize(panelSize);
+//		this.setMaximumSize(panelSize);
 	}
 
+	public void addImage() throws IOException {
+		BufferedImage myPicture = ImageIO.read(new File(imageName));
+		JLabel picLabel = new JLabel(new ImageIcon( myPicture ));
+		this.add( picLabel );
+	}
 	@Override
-	public void paint(Graphics g) {
-		super.paint(g);
-
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
 		//display iamge
 		ShowImage();
 	}
