@@ -5,12 +5,13 @@ import java.util.ArrayList;
 public class ImageLabels {
 
 
-	private ArrayList<PointsLabelPair> pointsAndLabels = null;
+	private ArrayList<PointsLabelPair> pointsAndLabels;
 	
-	private PointsLabelPair currentLabel = null;
+	private PointsLabelPair currentLabel;
 
 	public ImageLabels() {
 		pointsAndLabels = new ArrayList<PointsLabelPair>();
+		currentLabel = new PointsLabelPair();
 	}
 	
 	public ImageLabels(String fileName) {
@@ -22,6 +23,17 @@ public class ImageLabels {
 		// the ArrayList with labels and the corresponding points for each of them.
 		return null;
 	}
+
+	public PointsLabelPair getCurrentLabel() {
+		return currentLabel;
+	}
+
+	public ArrayList<PointsLabelPair> getPoints() {
+		return pointsAndLabels;
+	}
+
+	public void updateCurrentLabel(PointsLabelPair currentLabel2) {
+		this.currentLabel = currentLabel2;
+	}
 	
-	//public void 
 }

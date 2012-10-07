@@ -6,6 +6,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 
+import javax.sound.sampled.ReverbType;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -15,7 +16,9 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
-public class MainFrame extends JFrame {
+import com.utils.ImageLabels;
+
+public class MainFrame extends JFrame{
 
 	private static final long serialVersionUID = 1L;
 
@@ -24,6 +27,8 @@ public class MainFrame extends JFrame {
 	JPanel imagePanel = new JPanel();
 
 	JPanel toolPanel = new JPanel();
+
+	String imageFilename;
 
 	BufferedImage image = null;
 
@@ -41,7 +46,7 @@ public class MainFrame extends JFrame {
 	private JMenuItem loadLabel = new JMenuItem("Load Label");
 	private JMenuItem saveLabel = new JMenuItem("Save Label");
 
-
+	private ImageLabels labels;
 
 	/**
 	 * sets up application window
@@ -55,6 +60,10 @@ public class MainFrame extends JFrame {
 		  		//maybe we also want to store the polygons somewhere? and read them next time
 		  		System.out.println("Exiting...");
 		    	System.exit(0);
+		  	}
+		  	
+		  	public void windowActivated(WindowEvent event){
+		  		System.out.println("Activate");
 		  	}
 		});
 
@@ -78,32 +87,39 @@ public class MainFrame extends JFrame {
 		//setup main window panel
 		appPanel = new JPanel();
 		this.setLayout(new BoxLayout(appPanel, BoxLayout.X_AXIS));
-		this.setContentPane(appPanel);
-
+		this.getContentPane(appPanel);
         //Create and set up the image panel.
-		imagePanel = new MainPanel(imageFilename);
+
+		imagePanel = new MainPanel(imageFilename, labels);
 		imagePanel.setOpaque(true); //content panes must be opaque
-		
+
 		appPanel.add(toolPanel);
 		appPanel.add(imagePanel);
 		this.setJMenuBar(menuBar);
 
 		//display all the stuff
 		this.pack();
-        this.setVisible(true);
+		this.setVisible(true);
 	}
-
+	
+	@Override
+	public void paint(Graphics g){
+		super.paint(g);
+		imagePanel.repaint();
+	}
+	
 	/**
 	 * Runs the program
 	 * @param argv path to an image
 	 */
-	public MainFrame(String imageFilename) {
+	public MainFrame(String imageFilename, ImageLabels labels) {
 		try {
+			this.labels = labels;
+			this.imageFilename = imageFilename;
 			setupGUI(imageFilename);
 		} catch (Exception e) {
 			System.err.println("Image: " + imageFilename);
 			e.printStackTrace();
 		}
 	}
-
 }

@@ -1,8 +1,7 @@
 package com.functionality;
 
-import javax.swing.JFrame;
-
 import com.gui.MainFrame;
+import com.utils.ImageLabels;
 public class Main {
 
 	/**
@@ -10,11 +9,8 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		ImageLabels labels = new ImageLabels();
+		MainFrame mainFrame = new MainFrame("/afs/inf.ed.ac.uk/user/s09/s0939895/Desktop/hci-practical/images/U1003_0000.jpg", labels);
 		
-		MainFrame mainFrame = new MainFrame("/afs/inf.ed.ac.uk/user/s09/s0939895/Desktop/hci-practical/images/U1003_0000.jpg");
-		
-		//imageFrame.setContentPane(mainPanel);
-		//toolsFrame.setContentPane(sidePanel);
-		mainFrame.setVisible(true);
 	}
 }
