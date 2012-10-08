@@ -87,7 +87,7 @@ public class MainFrame extends JFrame{
 		//setup main window panel
 		appPanel = new JPanel();
 		this.setLayout(new BoxLayout(appPanel, BoxLayout.X_AXIS));
-		this.getContentPane(appPanel);
+		this.setContentPane(appPanel);
         //Create and set up the image panel.
 
 		imagePanel = new MainPanel(imageFilename, labels);
@@ -99,13 +99,12 @@ public class MainFrame extends JFrame{
 
 		//display all the stuff
 		this.pack();
-		this.setVisible(true);
 	}
 	
 	@Override
 	public void paint(Graphics g){
 		super.paint(g);
-		imagePanel.repaint();
+		imagePanel.paint(imagePanel.getGraphics());
 	}
 	
 	/**

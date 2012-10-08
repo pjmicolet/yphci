@@ -84,8 +84,8 @@ public class MainPanel extends JPanel implements MouseListener {
 		this.add( picLabel );
 	}
 	@Override
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
+	public void paint(Graphics g) {
+		super.paint(g);
 		//display iamge
 		//showImage();
 
@@ -109,6 +109,7 @@ public class MainPanel extends JPanel implements MouseListener {
 			g.fillOval(currentLabel.getX() - 5, currentLabel.getY() - 5, 10, 10);
 		}
 	}
+	
 	public void finishLabel(PointsLabelPair label) {
 		//if there are less than 3 vertices than nothing to be completed
 		if (label.size() >= 3) {
@@ -116,7 +117,7 @@ public class MainPanel extends JPanel implements MouseListener {
 			Point lastPoint = label.get(label.size() - 1);
 		
 			Graphics2D g = (Graphics2D)this.getGraphics();
-			g.setColor(Color.GREEN);
+			g.setColor(Color.PINK);
 			g.drawLine(firstPoint.getX(), firstPoint.getY(), lastPoint.getX(), lastPoint.getY());
 		}
 	}
@@ -136,7 +137,15 @@ public class MainPanel extends JPanel implements MouseListener {
 		g.setColor(Color.PINK);
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			if (currentLabel.size() != 0) {
+				Point firstPoint = currentLabel.get(0);
 				Point lastPoint = currentLabel.getLastPoint();
+				int distance = firstPoint.distance(x, y);
+				if (distance <= 5) {
+					finishLabel(currentLabel);
+					labels.closeCurrentLabel();
+					return;
+					//TODO: get labeling prompt to appear.
+				}
 				g.drawLine(lastPoint.getX(), lastPoint.getY(), x, y);
 			}
 			g.fillOval(x-5,y-5,10,10);

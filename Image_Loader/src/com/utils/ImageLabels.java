@@ -8,10 +8,13 @@ public class ImageLabels {
 	private ArrayList<PointsLabelPair> pointsAndLabels;
 	
 	private PointsLabelPair currentLabel;
+	
+	private boolean currentLabelFlag;
 
 	public ImageLabels() {
 		pointsAndLabels = new ArrayList<PointsLabelPair>();
 		currentLabel = new PointsLabelPair();
+		currentLabelFlag = true;
 	}
 	
 	public ImageLabels(String fileName) {
@@ -25,7 +28,13 @@ public class ImageLabels {
 	}
 
 	public PointsLabelPair getCurrentLabel() {
-		return currentLabel;
+		if (currentLabelFlag) 
+			return currentLabel;
+		else { 
+			currentLabel = new PointsLabelPair();
+			currentLabelFlag = true;
+			return currentLabel;
+		}
 	}
 
 	public ArrayList<PointsLabelPair> getPoints() {
@@ -34,6 +43,11 @@ public class ImageLabels {
 
 	public void updateCurrentLabel(PointsLabelPair currentLabel2) {
 		this.currentLabel = currentLabel2;
+	}
+
+	public void closeCurrentLabel() {
+		pointsAndLabels.add(currentLabel);
+		currentLabelFlag = false;
 	}
 	
 }
