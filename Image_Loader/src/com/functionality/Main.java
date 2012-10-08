@@ -15,7 +15,7 @@ public class Main {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
-		MainFrame mainFrame = new MainFrame("/Users/paul-julesmicolet/Pictures/4chanfile/1348777794239.jpeg");
+		MainFrame mainFrame = new MainFrame("/Users/paul-julesmicolet/Pictures/4chanfile/1349134526073.jpeg");
 		
 		//imageFrame.setContentPane(mainPanel);
 		//toolsFrame.setContentPane(sidePanel);
