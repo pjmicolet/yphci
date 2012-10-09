@@ -93,6 +93,20 @@ public class MainFrame extends JFrame{
 		file.add(newImage);
 		file.add(loadLabel);
 		file.add(saveLabel);
+		
+		newImage.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				try {
+					loadNewImage();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
 
 		//setup main window panel
 		appPanel = new JPanel();
@@ -135,5 +149,17 @@ public class MainFrame extends JFrame{
 	
 	public void finishLabel(){
 		imagePanel.finishLabel();
+	}
+	
+	public void loadNewImage() throws Exception{
+		FileChooser fc = new FileChooser();
+		labels = new ImageLabels();
+	
+		//TODO: Find a less retarded way of doing this.
+		while(!fc.isDone()){
+			
+		}
+		imagePanel.resetImage(fc.getPath(), labels);
+		imagePanel.repaint();
 	}
 }

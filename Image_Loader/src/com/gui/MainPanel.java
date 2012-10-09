@@ -46,6 +46,7 @@ public class MainPanel extends JPanel implements MouseListener {
 		this.imageName = imageName;
 		//getImage();
 		addImage();
+		this.add( picLabel );
 	}
 
 	/**
@@ -59,6 +60,7 @@ public class MainPanel extends JPanel implements MouseListener {
 		}
 	}
 
+	@Deprecated
 	public void getImage() throws IOException {
 		image = ImageIO.read(new File(imageName));
 		if (image.getWidth() > 800 || image.getHeight() > 600) {
@@ -81,7 +83,6 @@ public class MainPanel extends JPanel implements MouseListener {
 	public void addImage() throws IOException {
 		this.image = ImageIO.read(new File(imageName));
 		this.picLabel = new JLabel(new ImageIcon( this.image ));
-		this.add( picLabel );
 	}
 	
 	@Override
@@ -176,7 +177,6 @@ public class MainPanel extends JPanel implements MouseListener {
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -195,5 +195,12 @@ public class MainPanel extends JPanel implements MouseListener {
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public void resetImage(String newPath, ImageLabels newLabels) throws IOException{
+		labels = newLabels;
+		imageName = newPath;
+		ImageIcon icon = new ImageIcon(newPath);
+		picLabel.setIcon(icon);
 	}
 }
