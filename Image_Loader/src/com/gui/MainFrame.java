@@ -1,6 +1,5 @@
 package com.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
@@ -16,18 +15,22 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
-public class MainFrame extends JFrame {
+import com.utils.ImageLabels;
+
+public class MainFrame extends JFrame{
 
 	private static final long serialVersionUID = 1L;
 
 	JPanel appPanel = new JPanel();
 
 	JPanel imagePanel = new JPanel();
-	
+
 	JPanel toolPanel = new JPanel();
 
+	String imageFilename;
+
 	BufferedImage image = null;
-	
+
 	private JButton newLabel = new JButton("New Label");
 	private JButton editLabel = new JButton("Edit Label");
 	private JButton deleteLabel = new JButton("Delete Label");
@@ -35,13 +38,14 @@ public class MainFrame extends JFrame {
 	private JButton redo = new JButton("Redo");
 
 	private JMenuBar menuBar = new JMenuBar();
-	
+
 	private JMenu file = new JMenu("File");
-	
+
 	private JMenuItem newImage = new JMenuItem("New Image");
 	private JMenuItem loadLabel = new JMenuItem("Load Label");
 	private JMenuItem saveLabel = new JMenuItem("Save Label");
 
+	private ImageLabels labels;
 
 	/**
 	 * sets up application window
@@ -56,10 +60,14 @@ public class MainFrame extends JFrame {
 		  		System.out.println("Exiting...");
 		    	System.exit(0);
 		  	}
+
+		  	public void windowActivated(WindowEvent event){
+		  		System.out.println("Activate");
+		  	}
 		});
 
 		//Sets up the buttons.
-		
+
 		toolPanel.setLayout(new GridLayout(0,2));
 		toolPanel.add(newLabel);
 		toolPanel.add(Box.createGlue());
@@ -74,36 +82,44 @@ public class MainFrame extends JFrame {
 		file.add(newImage);
 		file.add(loadLabel);
 		file.add(saveLabel);
-				
-		this.setJMenuBar(menuBar);
+
 		//setup main window panel
 		appPanel = new JPanel();
-		this.setLayout(new BorderLayout());
+		this.setLayout(new BoxLayout(appPanel, BoxLayout.X_AXIS));
 		this.setContentPane(appPanel);
-
         //Create and set up the image panel.
-		imagePanel = new MainPanel(imageFilename);
+
+		imagePanel = new MainPanel(imageFilename, labels);
 		imagePanel.setOpaque(true); //content panes must be opaque
 
-		appPanel.add(toolPanel, BorderLayout.WEST);
-		appPanel.add(imagePanel, BorderLayout.CENTER);
+		appPanel.add(toolPanel);
+		appPanel.add(imagePanel);
+		this.setJMenuBar(menuBar);
 
 		//display all the stuff
 		this.pack();
-        this.setVisible(true);
+		this.setVisible(true);
 	}
 
+
+	@Override
+	public void paint(Graphics g){
+		super.paint(g);
+		repaint();
+	}
+	
 	/**
 	 * Runs the program
 	 * @param argv path to an image
 	 */
-	public MainFrame(String imageFilename) {
+	public MainFrame(String imageFilename, ImageLabels labels) {
 		try {
+			this.labels = labels;
+			this.imageFilename = imageFilename;
 			setupGUI(imageFilename);
 		} catch (Exception e) {
 			System.err.println("Image: " + imageFilename);
 			e.printStackTrace();
 		}
 	}
-
 }

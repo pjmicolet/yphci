@@ -1,24 +1,16 @@
 package com.functionality;
 
-import javax.swing.JFrame;
-
 import com.gui.MainFrame;
-
+import com.utils.ImageLabels;
 public class Main {
 
-	private static JFrame toolsFrame;
-	private static JFrame imageFrame;
-	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		ImageLabels labels = new ImageLabels();
+		MainFrame mainFrame = new MainFrame("/Users/paul-julesmicolet/Pictures/4chanfile/1348767914065.jpeg", labels);
 		
-		MainFrame mainFrame = new MainFrame("/Users/paul-julesmicolet/Pictures/4chanfile/1349134526073.jpeg");
-		
-		//imageFrame.setContentPane(mainPanel);
-		//toolsFrame.setContentPane(sidePanel);
-		mainFrame.setVisible(true);
 	}
 }
