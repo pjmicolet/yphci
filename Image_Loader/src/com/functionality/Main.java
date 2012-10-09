@@ -10,7 +10,7 @@ public class Main {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		ImageLabels labels = new ImageLabels();
-		MainFrame mainFrame = new MainFrame("/Users/paul-julesmicolet/Pictures/4chanfile/1348767914065.jpeg", labels);
-		
+		MainFrame mainFrame = new MainFrame("/Users/paul-julesmicolet/Pictures/4chanfile/1347745104415.png", labels);
+		mainFrame.setVisible(true);
 	}
 }

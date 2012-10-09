@@ -1,4 +1,5 @@
 package com.utils;
+import java.lang.Math;
 
 /**
  * simple class for handling points
@@ -33,4 +34,7 @@ public class Point {
 		this.y = y;
 	}
 	
+	public int distance(int x1, int y1){
+	return (int) Math.sqrt(((x-x1)*(x-x1) + (y-y1)*(y-y1)));
+	}
 }

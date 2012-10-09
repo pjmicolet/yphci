@@ -2,6 +2,8 @@ package com.gui;
 
 import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -23,7 +25,7 @@ public class MainFrame extends JFrame{
 
 	JPanel appPanel = new JPanel();
 
-	JPanel imagePanel = new JPanel();
+	MainPanel imagePanel = new MainPanel();
 
 	JPanel toolPanel = new JPanel();
 
@@ -78,6 +80,15 @@ public class MainFrame extends JFrame{
 		toolPanel.add(undo);
 		toolPanel.add(redo);	
 
+		newLabel.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				finishLabel();
+			}
+		});
+		
 		menuBar.add(file);
 		file.add(newImage);
 		file.add(loadLabel);
@@ -98,14 +109,13 @@ public class MainFrame extends JFrame{
 
 		//display all the stuff
 		this.pack();
-		this.setVisible(true);
 	}
 
 
 	@Override
 	public void paint(Graphics g){
 		super.paint(g);
-		repaint();
+		imagePanel.paint(imagePanel.getGraphics());
 	}
 	
 	/**
@@ -121,5 +131,9 @@ public class MainFrame extends JFrame{
 			System.err.println("Image: " + imageFilename);
 			e.printStackTrace();
 		}
+	}
+	
+	public void finishLabel(){
+		imagePanel.finishLabel();
 	}
 }
