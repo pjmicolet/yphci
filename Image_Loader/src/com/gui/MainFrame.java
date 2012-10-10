@@ -12,12 +12,14 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
 import com.utils.ImageLabels;
+import com.utils.PointsLabelPair;
 
 public class MainFrame extends JFrame{
 
@@ -36,17 +38,21 @@ public class MainFrame extends JFrame{
 	private JButton newLabel = new JButton("New Label");
 	private JButton editLabel = new JButton("Edit Label");
 	private JButton deleteLabel = new JButton("Delete Label");
-	private JButton undo = new JButton("Undo");
-	private JButton redo = new JButton("Redo");
-
+	
 	private JMenuBar menuBar = new JMenuBar();
 
 	private JMenu file = new JMenu("File");
-
+	private JMenu edit = new JMenu("Edit");
+	
+	private JList labelsList;
+	
 	private JMenuItem newImage = new JMenuItem("New Image");
 	private JMenuItem loadLabel = new JMenuItem("Load Label");
 	private JMenuItem saveLabel = new JMenuItem("Save Label");
 
+	private JMenuItem undoLabel = new JMenuItem("Undo");
+	private JMenuItem redoLabel = new JMenuItem("Redo");
+	
 	private ImageLabels labels;
 
 	/**
@@ -69,7 +75,7 @@ public class MainFrame extends JFrame{
 		});
 
 		//Sets up the buttons.
-
+		labelsList = new JList();
 		toolPanel.setLayout(new GridLayout(0,2));
 		toolPanel.add(newLabel);
 		toolPanel.add(Box.createGlue());
@@ -77,8 +83,8 @@ public class MainFrame extends JFrame{
 		toolPanel.add(Box.createGlue());
 		toolPanel.add(deleteLabel);
 		toolPanel.add(Box.createGlue());
-		toolPanel.add(undo);
-		toolPanel.add(redo);	
+		toolPanel.add(labelsList);
+		toolPanel.add(Box.createGlue());
 
 		newLabel.addActionListener(new ActionListener() {
 			
@@ -90,9 +96,14 @@ public class MainFrame extends JFrame{
 		});
 		
 		menuBar.add(file);
+		menuBar.add(edit);
+		
 		file.add(newImage);
 		file.add(loadLabel);
 		file.add(saveLabel);
+		
+		edit.add(undoLabel);
+		edit.add(redoLabel);
 		
 		newImage.addActionListener(new ActionListener() {
 			
@@ -130,6 +141,12 @@ public class MainFrame extends JFrame{
 	public void paint(Graphics g){
 		super.paint(g);
 		imagePanel.paint(imagePanel.getGraphics());
+		
+		if (labels.getPoints().size() != 0) {
+			for (PointsLabelPair label : labels.getPoints()) {
+				//labelsList.add
+			}
+		}
 	}
 	
 	/**
@@ -148,7 +165,7 @@ public class MainFrame extends JFrame{
 	}
 	
 	public void finishLabel(){
-		imagePanel.finishLabel();
+		imagePanel.finishLabel(true);
 	}
 	
 	public void loadNewImage() throws Exception{
@@ -156,9 +173,6 @@ public class MainFrame extends JFrame{
 		labels = new ImageLabels();
 	
 		//TODO: Find a less retarded way of doing this.
-		while(!fc.isDone()){
-			
-		}
 		imagePanel.resetImage(fc.getPath(), labels);
 		imagePanel.repaint();
 	}

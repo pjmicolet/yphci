@@ -49,5 +49,24 @@ public class ImageLabels {
 		pointsAndLabels.add(currentLabel);
 		currentLabelFlag = false;
 	}
+
+	public PointsLabelPair getPoint(Point clickedPoint) {
+		int x = clickedPoint.getX();
+		int y = clickedPoint.getY();
+		for (PointsLabelPair pair : pointsAndLabels) {
+			ArrayList<Point> pairPoints = pair.getPoints();
+			
+			for (Point p : pairPoints) {
+				int pointX = p.getX();
+				int pointY = p.getY();
+				
+				if (pointX == x && pointY == y) {
+					return pair;
+				}
+			}
+			
+		}
+		return null;
+	}
 	
 }

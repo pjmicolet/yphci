@@ -11,10 +11,10 @@ public class Main {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		ImageLabels labels = new ImageLabels();
-		FileChooser fc = new FileChooser();
-		while(!fc.isDone()){
-		}
-		String path = fc.getPath();
+		//FileChooser fc = new FileChooser();
+//		while(!fc.isDone()){
+//		}
+		String path = "/afs/inf.ed.ac.uk/user/s09/s0939895/Desktop/HCI-cw/yphci/help.jpeg";
 		MainFrame mainFrame = new MainFrame(path, labels);
 		mainFrame.setVisible(true);
 	}
