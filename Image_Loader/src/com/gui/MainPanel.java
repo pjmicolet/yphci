@@ -21,7 +21,7 @@ public class MainPanel extends JPanel  {
 	private String imageName;
 
 	public MainPanel() {
-		this.setVisible(true);
+	//	this.setVisible(true);
 
 		}
 

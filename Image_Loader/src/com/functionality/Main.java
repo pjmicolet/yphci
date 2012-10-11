@@ -15,6 +15,5 @@ public class Main {
 		
 		//imageFrame.setContentPane(mainPanel);
 		//toolsFrame.setContentPane(sidePanel);
-		mainFrame.setVisible(true);
 	}
 }

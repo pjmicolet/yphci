@@ -26,6 +26,7 @@ public class MainFrame extends JFrame {
 
 	JPanel toolPanel = new JPanel();
 
+	
 	BufferedImage image = null;
 
 	private JButton newLabel = new JButton("New Label");
@@ -42,11 +43,10 @@ public class MainFrame extends JFrame {
 	private JMenuItem loadLabel = new JMenuItem("Load Label");
 	private JMenuItem saveLabel = new JMenuItem("Save Label");
 
-
-	@Override
+    @Override
 	public void paint(Graphics g) {
 		super.paint(g);
-		imagePanel.paint(g); //update image panel
+		imagePanel.paint(g);
 	}
 	/**
 	 * sets up application window
@@ -75,6 +75,7 @@ public class MainFrame extends JFrame {
 		toolPanel.add(undo);
 		toolPanel.add(redo);	
 
+		this.setJMenuBar(menuBar);
 		menuBar.add(file);
 		file.add(newImage);
 		file.add(loadLabel);
@@ -89,14 +90,11 @@ public class MainFrame extends JFrame {
 		imagePanel = new MainPanel(imageFilename);
 		imagePanel.setOpaque(true); //content panes must be opaque
 
-		
+
 		appPanel.add(imagePanel);
 		appPanel.add(toolPanel);
-		this.setJMenuBar(menuBar);
-
 		//display all the stuff
 		this.pack();
-        this.setVisible(true);
 	}
 
 	/**
@@ -110,6 +108,10 @@ public class MainFrame extends JFrame {
 			System.err.println("Image: " + imageFilename);
 			e.printStackTrace();
 		}
+		
+
+        this.setVisible(true);
+		
 	}
 
 }
