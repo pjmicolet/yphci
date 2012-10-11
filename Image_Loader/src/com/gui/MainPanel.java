@@ -110,6 +110,13 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 			drawLabel(label);
 			finishLabel(label);
 		}
+		System.out.println("isSelected: " + labelsList.getIsSelected());
+		System.out.println("Selected Index: " + labelsList.getSelectedIndex());
+		if (labelsList.getIsSelected()) {
+			int index = labelsList.getSelectedIndex();
+			g.setColor(Color.CYAN);
+			g.fillPolygon(labels.getPoints().get(index).getPolygon());
+		}
 		drawLabel(labels.getCurrentLabel());	
 	}
 	
@@ -163,9 +170,12 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 //			else
 //				JOptionPane.showMessageDialog(null,
 //						"Aborting current object..", "HCI FTW", 1);
-			if (labelName != null && labelName == " ")
+			if (labelName != null && labelName != " ") {
 				label.setLabel(labelName);
+//				labels.updateCurrentLabel(label);
+			};
 		}
+		labelsList.addElement(label.getLabel());
 		labels.closeCurrentLabel();
 		//System.out.println(labels.getPoints().size());
 	}

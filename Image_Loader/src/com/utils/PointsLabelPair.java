@@ -15,6 +15,12 @@ public class PointsLabelPair {
 		this.polygon = new Polygon();
 	}
 	
+	public PointsLabelPair(String lbl) {
+		this.points = new ArrayList<Point>();
+		this.polygon = new Polygon();
+		this.label = lbl;
+	}
+	
 	public ArrayList<Point> getPoints() {
 		return points;
 	}
@@ -40,6 +46,10 @@ public class PointsLabelPair {
 	}	
 	public Point get(int index) {
 		return points.get(index);
+	}
+	
+	public Polygon getPolygon() {
+		return polygon;
 	}
 	public int getClosest(Point point) {
 		for (Point p : points) {

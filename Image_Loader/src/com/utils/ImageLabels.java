@@ -17,6 +17,12 @@ public class ImageLabels {
 		currentLabelFlag = true;
 	}
 	
+	public ImageLabels(ArrayList<PointsLabelPair> points) {
+		pointsAndLabels = points;
+		currentLabel = new PointsLabelPair();
+		currentLabelFlag = true;
+	}
+	
 	public ImageLabels(String fileName) {
 		pointsAndLabels = parseXMLFile(fileName);
 	}
