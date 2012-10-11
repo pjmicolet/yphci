@@ -30,6 +30,7 @@ public class MainFrame extends JFrame{
 	MainPanel imagePanel = new MainPanel();
 
 	JPanel toolPanel = new JPanel();
+	JPanel secondPanel = new JPanel();
 
 	String imageFilename;
 
@@ -44,7 +45,7 @@ public class MainFrame extends JFrame{
 	private JMenu file = new JMenu("File");
 	private JMenu edit = new JMenu("Edit");
 	
-	private JList labelsList;
+	private LabelList labelList;
 	
 	private JMenuItem newImage = new JMenuItem("New Image");
 	private JMenuItem loadLabel = new JMenuItem("Load Label");
@@ -73,9 +74,10 @@ public class MainFrame extends JFrame{
 		  		System.out.println("Activate");
 		  	}
 		});
-
+		
 		//Sets up the buttons.
-		labelsList = new JList();
+		labelList = new LabelList(this.labels);
+		
 		toolPanel.setLayout(new GridLayout(0,2));
 		toolPanel.add(newLabel);
 		toolPanel.add(Box.createGlue());
@@ -83,8 +85,11 @@ public class MainFrame extends JFrame{
 		toolPanel.add(Box.createGlue());
 		toolPanel.add(deleteLabel);
 		toolPanel.add(Box.createGlue());
-		toolPanel.add(labelsList);
-		toolPanel.add(Box.createGlue());
+		toolPanel.add(labelList);
+		
+		secondPanel.setLayout(new BoxLayout(secondPanel, BoxLayout.Y_AXIS));
+		secondPanel.add(toolPanel);
+		secondPanel.add(labelList);
 
 		newLabel.addActionListener(new ActionListener() {
 			
@@ -125,10 +130,10 @@ public class MainFrame extends JFrame{
 		this.setContentPane(appPanel);
         //Create and set up the image panel.
 
-		imagePanel = new MainPanel(imageFilename, labels);
+		imagePanel = new MainPanel(imageFilename, labels, labelList);
 		imagePanel.setOpaque(true); //content panes must be opaque
 
-		appPanel.add(toolPanel);
+		appPanel.add(secondPanel);
 		appPanel.add(imagePanel);
 		this.setJMenuBar(menuBar);
 

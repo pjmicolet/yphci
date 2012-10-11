@@ -35,6 +35,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
     private boolean dragging = false;
     private PointsLabelPair currentLabel = null;
 	private int dragIndex;
+	private LabelList labelsList;
 	
 	public MainPanel() {
 		addMouseListener(this);
@@ -46,9 +47,10 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 	 * @param imageName - path to image
 	 * @throws Exception if error loading the image
 	 */
-	public MainPanel(String imageName, ImageLabels labels) throws Exception{
+	public MainPanel(String imageName, ImageLabels labels, LabelList labelsList) throws Exception{
 		this();
 		this.labels = labels;
+		this.labelsList = labelsList;
 		this.imageName = imageName;
 		//getImage();
 		addImage();
@@ -104,13 +106,10 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 		super.paint(g);
 		//display iamge
 		//showImage();
-
 		for(PointsLabelPair label : labels.getPoints()) {
-//			System.out.println(label.size());
 			drawLabel(label);
 			finishLabel(label);
 		}
-		//System.out.println(labels.getCurrentLabel());
 		drawLabel(labels.getCurrentLabel());	
 	}
 	
