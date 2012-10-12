@@ -1,5 +1,6 @@
 package com.gui;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -110,14 +111,19 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 			drawLabel(label);
 			finishLabel(label);
 		}
-		System.out.println("isSelected: " + labelsList.getIsSelected());
-		System.out.println("Selected Index: " + labelsList.getSelectedIndex());
+		drawLabel(labels.getCurrentLabel());
+		
 		if (labelsList.getIsSelected()) {
-			int index = labelsList.getSelectedIndex();
-			g.setColor(Color.CYAN);
-			g.fillPolygon(labels.getPoints().get(index).getPolygon());
+			Graphics2D g2 = (Graphics2D) g;
+			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
+			g2.setColor(Color.CYAN);
+			g2.fillPolygon(labels.getPoints().get(labelsList.getSelectedIndex()).getPolygon());
 		}
-		drawLabel(labels.getCurrentLabel());	
+	
+	}
+	
+	public void fillPolygon(int index) {
+
 	}
 	
 	public void drawLabel(PointsLabelPair label) {

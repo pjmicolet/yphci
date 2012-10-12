@@ -34,21 +34,21 @@ public class LabelList extends JPanel {
 		labelList.setVisibleRowCount(6);
 		JScrollPane pane = new JScrollPane(labelList);
 		
-		MouseListener mouseListener = new MouseAdapter() {
-		      public void mouseClicked(MouseEvent mouseEvent) {
-		        JList theList = (JList) mouseEvent.getSource();
-		        if (mouseEvent.getClickCount() == 1) {
-		          int index = theList.locationToIndex(mouseEvent.getPoint());
-		          if (index >= 0) {
-		            Object o = theList.getModel().getElementAt(index);
-		            isSelected = true;
-		            selectedIndex = index;
-		            System.out.println("Clicked on: " + index);
-		          }
-		        }
-		      }
-		    }; 
-		 this.labelList.addMouseListener(mouseListener);
+//		MouseListener mouseListener = new MouseAdapter() {
+//		      public void mouseClicked(MouseEvent mouseEvent) {
+//		        JList theList = (JList) mouseEvent.getSource();
+//		        if (mouseEvent.getClickCount() == 1) {
+//		          int index = theList.locationToIndex(mouseEvent.getPoint());
+//		          if (index >= 0) {
+//		            Object o = theList.getModel().getElementAt(index);
+//		            isSelected = true;
+//		            selectedIndex = index;
+//		            System.out.println("Clicked on: " + index);
+//		          }
+//		        }
+//		      }
+//		    }; 
+//		 this.labelList.addMouseListener(mouseListener);
 		add(pane);
 	}
 
@@ -66,6 +66,18 @@ public class LabelList extends JPanel {
 	public int getSelectedIndex() {
 		// TODO Auto-generated method stub
 		return selectedIndex;
+	}
+
+	public void setIsSelected(boolean b) {
+		isSelected = b;
+	}
+	
+	public JList getJList() {
+		return labelList;
+	}
+
+	public void setSelectedIndex(int index) {
+		selectedIndex = index;
 	}
 
 }

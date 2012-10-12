@@ -49,6 +49,7 @@ public class ImageLabels {
 
 	public void updateCurrentLabel(PointsLabelPair currentLabel2) {
 		this.currentLabel = currentLabel2;
+		this.currentLabel.updatePolygon();
 	}
 
 	public void closeCurrentLabel() {

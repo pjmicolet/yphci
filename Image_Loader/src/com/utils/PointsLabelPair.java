@@ -20,7 +20,6 @@ public class PointsLabelPair {
 		this.polygon = new Polygon();
 		this.label = lbl;
 	}
-	
 	public ArrayList<Point> getPoints() {
 		return points;
 	}
@@ -46,6 +45,19 @@ public class PointsLabelPair {
 	}	
 	public Point get(int index) {
 		return points.get(index);
+	}
+	
+	public void updatePolygon() {
+		int npoints = this.points.size();
+		int[] xpoints = new int[npoints];
+		int[] ypoints = new int[npoints];
+		
+		for (int i = 0; i < npoints; i++) {
+			xpoints[i] = this.points.get(i).getX();
+			ypoints[i] = this.points.get(i).getY();
+		}
+		
+		this.polygon = new Polygon(xpoints, ypoints, npoints);
 	}
 	
 	public Polygon getPolygon() {
