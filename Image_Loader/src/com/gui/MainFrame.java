@@ -4,6 +4,9 @@ import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -17,6 +20,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import com.utils.ImageLabels;
 import com.utils.PointsLabelPair;
@@ -30,6 +35,7 @@ public class MainFrame extends JFrame{
 	MainPanel imagePanel = new MainPanel();
 
 	JPanel toolPanel = new JPanel();
+	JPanel secondPanel = new JPanel();
 
 	String imageFilename;
 
@@ -44,7 +50,7 @@ public class MainFrame extends JFrame{
 	private JMenu file = new JMenu("File");
 	private JMenu edit = new JMenu("Edit");
 	
-	private JList labelsList;
+	private LabelList labelList;
 	
 	private JMenuItem newImage = new JMenuItem("New Image");
 	private JMenuItem loadLabel = new JMenuItem("Load Label");
@@ -73,9 +79,47 @@ public class MainFrame extends JFrame{
 		  		System.out.println("Activate");
 		  	}
 		});
-
+		
 		//Sets up the buttons.
-		labelsList = new JList();
+		labelList = new LabelList(this.labels);
+		MouseListener mouseListener = new MouseAdapter() {
+		      public void mouseClicked(MouseEvent mouseEvent) {
+		        JList theList = (JList) mouseEvent.getSource();
+		        if (mouseEvent.getClickCount() == 1) {
+		          int index = theList.locationToIndex(mouseEvent.getPoint());
+		          if (index >= 0) {
+		            Object o = theList.getModel().getElementAt(index);
+		            labelList.setIsSelected(true);
+		            labelList.setSelectedIndex(index);
+		            imagePanel.paint(imagePanel.getGraphics());
+		            System.out.println("Clicked on: " + index);
+		          }
+		        }
+		      }
+		    };
+		ListSelectionListener selectionListener = new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent listEvent) {
+		        JList theList = (JList) listEvent.getSource();
+		        //if (listEvent.getClickCount() == 1) {
+		          //int index = theList.locationToIndex(listEvent.);
+		          	int index = theList.getSelectedIndex();
+		          	System.out.println("index:" + index);
+		        	if (index >= 0) {
+		            Object o = theList.getModel().getElementAt(index);
+		            labelList.setIsSelected(true);
+		            labelList.setSelectedIndex(index);
+		            imagePanel.paint(imagePanel.getGraphics());
+		            System.out.println("Clicked on: " + index);
+		          //}
+		        }				
+				
+			}
+			
+		};
+		this.labelList.getJList().addListSelectionListener(selectionListener);
+//		this.labelList.getJList().addMouseListener(mouseListener);
+		
 		toolPanel.setLayout(new GridLayout(0,2));
 		toolPanel.add(newLabel);
 		toolPanel.add(Box.createGlue());
@@ -83,8 +127,11 @@ public class MainFrame extends JFrame{
 		toolPanel.add(Box.createGlue());
 		toolPanel.add(deleteLabel);
 		toolPanel.add(Box.createGlue());
-		toolPanel.add(labelsList);
-		toolPanel.add(Box.createGlue());
+		toolPanel.add(labelList);
+		
+		secondPanel.setLayout(new BoxLayout(secondPanel, BoxLayout.Y_AXIS));
+		secondPanel.add(toolPanel);
+		secondPanel.add(labelList);
 
 		newLabel.addActionListener(new ActionListener() {
 			
@@ -125,10 +172,10 @@ public class MainFrame extends JFrame{
 		this.setContentPane(appPanel);
         //Create and set up the image panel.
 
-		imagePanel = new MainPanel(imageFilename, labels);
+		imagePanel = new MainPanel(imageFilename, labels, labelList);
 		imagePanel.setOpaque(true); //content panes must be opaque
 
-		appPanel.add(toolPanel);
+		appPanel.add(secondPanel);
 		appPanel.add(imagePanel);
 		this.setJMenuBar(menuBar);
 
@@ -176,4 +223,5 @@ public class MainFrame extends JFrame{
 		imagePanel.resetImage(fc.getPath(), labels);
 		imagePanel.repaint();
 	}
+
 }

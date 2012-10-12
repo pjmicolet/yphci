@@ -1,5 +1,6 @@
 package com.gui;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -35,6 +36,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
     private boolean dragging = false;
     private PointsLabelPair currentLabel = null;
 	private int dragIndex;
+	private LabelList labelsList;
 	
 	public MainPanel() {
 		addMouseListener(this);
@@ -46,9 +48,10 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 	 * @param imageName - path to image
 	 * @throws Exception if error loading the image
 	 */
-	public MainPanel(String imageName, ImageLabels labels) throws Exception{
+	public MainPanel(String imageName, ImageLabels labels, LabelList labelsList) throws Exception{
 		this();
 		this.labels = labels;
+		this.labelsList = labelsList;
 		this.imageName = imageName;
 		//getImage();
 		addImage();
@@ -104,14 +107,23 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 		super.paint(g);
 		//display iamge
 		//showImage();
-
 		for(PointsLabelPair label : labels.getPoints()) {
-//			System.out.println(label.size());
 			drawLabel(label);
 			finishLabel(label);
 		}
-		//System.out.println(labels.getCurrentLabel());
-		drawLabel(labels.getCurrentLabel());	
+		drawLabel(labels.getCurrentLabel());
+		
+		if (labelsList.getIsSelected()) {
+			Graphics2D g2 = (Graphics2D) g;
+			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
+			g2.setColor(Color.CYAN);
+			g2.fillPolygon(labels.getPoints().get(labelsList.getSelectedIndex()).getPolygon());
+		}
+	
+	}
+	
+	public void fillPolygon(int index) {
+
 	}
 	
 	public void drawLabel(PointsLabelPair label) {
@@ -164,9 +176,12 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 //			else
 //				JOptionPane.showMessageDialog(null,
 //						"Aborting current object..", "HCI FTW", 1);
-			if (labelName != null && labelName == " ")
+			if (labelName != null && labelName != " ") {
 				label.setLabel(labelName);
+//				labels.updateCurrentLabel(label);
+			};
 		}
+		labelsList.addElement(label.getLabel());
 		labels.closeCurrentLabel();
 		//System.out.println(labels.getPoints().size());
 	}
