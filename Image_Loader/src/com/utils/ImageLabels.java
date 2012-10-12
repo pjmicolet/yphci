@@ -6,9 +6,9 @@ public class ImageLabels {
 
 
 	private ArrayList<PointsLabelPair> pointsAndLabels;
-	
+
 	private PointsLabelPair currentLabel;
-	
+
 	private boolean currentLabelFlag;
 
 	public ImageLabels() {
@@ -16,13 +16,13 @@ public class ImageLabels {
 		currentLabel = new PointsLabelPair();
 		currentLabelFlag = true;
 	}
-	
+
 	public ImageLabels(ArrayList<PointsLabelPair> points) {
 		pointsAndLabels = points;
 		currentLabel = new PointsLabelPair();
 		currentLabelFlag = true;
 	}
-	
+
 	public ImageLabels(String fileName) {
 		pointsAndLabels = parseXMLFile(fileName);
 	}
@@ -62,18 +62,18 @@ public class ImageLabels {
 		int y = clickedPoint.getY();
 		for (PointsLabelPair pair : pointsAndLabels) {
 			ArrayList<Point> pairPoints = pair.getPoints();
-			
+
 			for (Point p : pairPoints) {
 				int pointX = p.getX();
 				int pointY = p.getY();
-				
+
 				if (pointX == x && pointY == y) {
 					return pair;
 				}
 			}
-			
+
 		}
 		return null;
 	}
-	
+
 }

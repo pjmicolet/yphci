@@ -186,14 +186,16 @@ public class MainFrame extends JFrame{
 
 	@Override
 	public void paint(Graphics g){
-		super.paint(g);
-		imagePanel.paint(imagePanel.getGraphics());
+		//super.paint(g);
+		super.paintComponents(g);
+		imagePanel.paintComponents(imagePanel.getGraphics());
 		
-		if (labels.getPoints().size() != 0) {
-			for (PointsLabelPair label : labels.getPoints()) {
-				//labelsList.add
-			}
-		}
+		//TODO: what is this ?
+//		if (labels.getPoints().size() != 0) {
+//			for (PointsLabelPair label : labels.getPoints()) {
+//				//labelsList.add
+//			}
+//		}
 	}
 	
 	/**
@@ -218,8 +220,6 @@ public class MainFrame extends JFrame{
 	public void loadNewImage() throws Exception{
 		FileChooser fc = new FileChooser();
 		labels = new ImageLabels();
-	
-		//TODO: Find a less retarded way of doing this.
 		imagePanel.resetImage(fc.getPath(), labels);
 		imagePanel.repaint();
 	}
