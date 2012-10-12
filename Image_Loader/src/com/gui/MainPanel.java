@@ -2,6 +2,7 @@ package com.gui;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -37,6 +38,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
     private PointsLabelPair currentLabel = null;
 	private int dragIndex;
 	private LabelList labelsList;
+	private Dimension panelSize = new Dimension(800,600);
 
 	public MainPanel() {
 		addMouseListener(this);
@@ -50,12 +52,17 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 	 */
 	public MainPanel(String imageName, ImageLabels labels, LabelList labelsList) throws Exception{
 		this();
+
+		setSize(panelSize);
+		setMinimumSize(panelSize);
+	    setPreferredSize(panelSize);
+		setMaximumSize(panelSize);
 		this.labels = labels;
 		this.labelsList = labelsList;
 		this.imageName = imageName;
 		//getImage();
-		addImage();
-		this.add( picLabel );
+		//addImage();
+		//this.add( picLabel );
 	}
 
 	/**
@@ -81,12 +88,6 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 			image.getGraphics().drawImage(scaledImage, 0, 0, this);
 		}
 
-		//Dimension panelSize = new Dimension(image.getWidth(), image.getHeight());
-//		Dimension panelSize = new Dimension(800, 600);
-//		this.setSize(panelSize);
-//		this.setMinimumSize(panelSize);
-//		this.setPreferredSize(panelSize);
-//		this.setMaximumSize(panelSize);
 	}
 
 	public void addImage() throws IOException {
@@ -103,53 +104,56 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 	}
 
 	@Override
-	public void paint(Graphics g) {
-		super.paint(g);
-		//display iamge
-		//showImage();
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+
+		Graphics2D g2 = (Graphics2D) g;
+		g.setColor(Color.PINK);
+		g2.setColor(Color.CYAN);
 		for(PointsLabelPair label : labels.getPoints()) {
-			drawLabel(label);
-			finishLabel(label);
+			//g2.drawPolygon(label.getPolygon());
+			drawLabel(label, g);
+			finishLabel(label, g);
 		}
-		drawLabel(labels.getCurrentLabel());
+		drawLabel(labels.getCurrentLabel(), g);
 
 		if (labelsList.getIsSelected()) {
-			Graphics2D g2 = (Graphics2D) g;
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
 			g2.setColor(Color.CYAN);
 			g2.fillPolygon(labels.getPoints().get(labelsList.getSelectedIndex()).getPolygon());
+			g2.drawPolygon(labels.getPoints().get(labelsList.getSelectedIndex()).getPolygon());
 		}
-
+		
+		System.out.println("Yolo");
+		
 	}
 
-	public void fillPolygon(int index) {
 
-	}
-
-	public void drawLabel(PointsLabelPair label) {
-		Graphics2D g = (Graphics2D)this.getGraphics();
-		g.setColor(Color.PINK);
+	public void drawLabel(PointsLabelPair label, Graphics g2) {
+		//Graphics2D g = (Graphics2D)g2;
+		g2.setColor(Color.PINK);
 		for(int i = 0; i < label.size(); i++) {
 			Point currentLabel = label.get(i);
 			if (i != 0) {
 				Point prevLabel = label.get(i - 1);
-				g.drawLine(prevLabel.getX(), prevLabel.getY(), currentLabel.getX(), currentLabel.getY());
+				g2.drawLine(prevLabel.getX(), prevLabel.getY(), currentLabel.getX(), currentLabel.getY());
 			}
-			g.fillOval(currentLabel.getX() - 5, currentLabel.getY() - 5, 10, 10);
+			g2.fillOval(currentLabel.getX() - 5, currentLabel.getY() - 5, 10, 10);
 		}
 	}
 
 
-	public void finishLabel(PointsLabelPair label) {
+	public void finishLabel(PointsLabelPair label, Graphics g2) {
 		//if there are less than 3 vertices than nothing to be completed
 		if (label.size() >= 3) {
 			Point firstPoint = label.get(0);
 			Point lastPoint = label.get(label.size() - 1);
 
-			Graphics2D g = (Graphics2D)this.getGraphics();
-			g.setColor(Color.PINK);
-			g.drawLine(firstPoint.getX(), firstPoint.getY(), lastPoint.getX(), lastPoint.getY());
+			Graphics2D g = (Graphics2D) g2;
+			g2.setColor(Color.PINK);
+			g2.drawLine(firstPoint.getX(), firstPoint.getY(), lastPoint.getX(), lastPoint.getY());
 		}
+
 	}
 
 	// Nicer finishLabel function, makes it easier to call outside of the MainPanel class.
@@ -169,34 +173,30 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 		if (isCurrentLabel) {
 			String labelName = JOptionPane.showInputDialog(null,
 					"Enter object's label: ", "HCI FTW", 1);
-//			if (labelName != null && labelName == " ")
-//				JOptionPane
-//						.showMessageDialog(null, "Label set to : "
-//								+ labelName, "HCI FTW", 1);
-//			else
-//				JOptionPane.showMessageDialog(null,
-//						"Aborting current object..", "HCI FTW", 1);
 			if (labelName != null && labelName != " ") {
 				label.setLabel(labelName);
-//				labels.updateCurrentLabel(label);
 			};
 		}
 		labelsList.addElement(label.getLabel());
 		labels.closeCurrentLabel();
-		//System.out.println(labels.getPoints().size());
 	}
+	
+	public void resetLabels(){
+		labels = new ImageLabels();
+	}
+	
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		int x = e.getX();
 		int y = e.getY();
 
-		if (x > image.getWidth() || y > image.getHeight()) {
+		if (x > panelSize.getWidth() || y > panelSize.getHeight()) {
 			//if not do nothing
 			return;
 		}
 
 		Graphics2D g = (Graphics2D)this.getGraphics();
-
+		//Graphics g = this.getGraphics();
 		PointsLabelPair currentLabel = labels.getCurrentLabel();
 		g.setColor(Color.PINK);
 		if (e.getButton() == MouseEvent.BUTTON1) {
@@ -214,7 +214,6 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 			g.fillOval(x-5,y-5,10,10);
 			currentLabel.addPoint(x, y);
 			labels.updateCurrentLabel(currentLabel);
-			System.out.println(x + " " + y);
 		}
 
 	}
@@ -232,16 +231,9 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		System.out.println("stop drag");
 		dragging = false;
 	}
 
-	public void resetImage(String newPath, ImageLabels newLabels) throws IOException{
-		labels = newLabels;
-		imageName = newPath;
-		ImageIcon icon = new ImageIcon(newPath);
-		picLabel.setIcon(icon);
-	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
@@ -253,16 +245,13 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 	public void mousePressed(MouseEvent e) {
 		int x = e.getX();
 		int y = e.getY();
-		//PointsLabelPair currentLabel = new PointsLabelPair();
 		Point clickedPoint = new Point(x, y);
-//		if (labels.getPoints().contains(clickedPoint)) {
 		for (PointsLabelPair pair : labels.getPoints())
 			for (Point p : pair.getPoints()) {
 				if (clickedPoint.distance(p.getX(), p.getY()) <=5) {
 					this.currentLabel = labels.getPoint(p);
 					dragging = true;
 					this.dragIndex = this.currentLabel.getClosest(clickedPoint);
-					System.out.println("here");
 					return;
 				}
 			}
@@ -270,7 +259,6 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		System.out.println("dragged");
 		if (dragging) {
 			int x = e.getX();
 			int y = e.getY();
@@ -280,7 +268,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 			currentLabel.getPoints().set(dragIndex, clickedPoint);
 			labels.updateCurrentLabel(currentLabel);
 			labels.closeCurrentLabel();
-			paint(this.getGraphics());
+			repaint();
 		}
 	}
 }

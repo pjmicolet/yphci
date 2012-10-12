@@ -1,20 +1,24 @@
 package com.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
 
+import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -24,22 +28,24 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.utils.ImageLabels;
-import com.utils.PointsLabelPair;
 
 public class MainFrame extends JFrame{
 
 	private static final long serialVersionUID = 1L;
 
-	JPanel appPanel = new JPanel();
+	private JPanel appPanel = new JPanel();
 
-	MainPanel imagePanel = new MainPanel();
+	private MainPanel imageLabeler = new MainPanel();
 
-	JPanel toolPanel = new JPanel();
-	JPanel secondPanel = new JPanel();
+	private JPanel toolPanel = new JPanel();
+	private JPanel secondPanel = new JPanel();
 
+	private JLabel imageLabel = new JLabel();
+	private JPanel imagePanel = new JPanel();
+	private JPanel imageTool = new JPanel();
+	
 	String imageFilename;
 
-	BufferedImage image = null;
 
 	private JButton newLabel = new JButton("New Label");
 	private JButton editLabel = new JButton("Edit Label");
@@ -60,7 +66,11 @@ public class MainFrame extends JFrame{
 	private JMenuItem redoLabel = new JMenuItem("Redo");
 	
 	private ImageLabels labels;
+	
+	private BufferedImage image;
 
+	
+	//TODO: Make this pretty.
 	/**
 	 * sets up application window
 	 * @param imageFilename image to be loaded for editing
@@ -76,49 +86,32 @@ public class MainFrame extends JFrame{
 		  	}
 
 		  	public void windowActivated(WindowEvent event){
-		  		System.out.println("Activate");
 		  	}
 		});
 		
 		//Sets up the buttons.
 		labelList = new LabelList(this.labels);
-		MouseListener mouseListener = new MouseAdapter() {
-		      public void mouseClicked(MouseEvent mouseEvent) {
-		        JList theList = (JList) mouseEvent.getSource();
-		        if (mouseEvent.getClickCount() == 1) {
-		          int index = theList.locationToIndex(mouseEvent.getPoint());
-		          if (index >= 0) {
-		            Object o = theList.getModel().getElementAt(index);
-		            labelList.setIsSelected(true);
-		            labelList.setSelectedIndex(index);
-		            imagePanel.paint(imagePanel.getGraphics());
-		            System.out.println("Clicked on: " + index);
-		          }
-		        }
-		      }
-		    };
+	
 		ListSelectionListener selectionListener = new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent listEvent) {
 		        JList theList = (JList) listEvent.getSource();
-		        //if (listEvent.getClickCount() == 1) {
-		          //int index = theList.locationToIndex(listEvent.);
 		          	int index = theList.getSelectedIndex();
-		          	System.out.println("index:" + index);
 		        	if (index >= 0) {
-		            Object o = theList.getModel().getElementAt(index);
 		            labelList.setIsSelected(true);
 		            labelList.setSelectedIndex(index);
-		            imagePanel.paint(imagePanel.getGraphics());
-		            System.out.println("Clicked on: " + index);
-		          //}
+		            imageLabeler.repaint();
 		        }				
 				
 			}
 			
 		};
 		this.labelList.getJList().addListSelectionListener(selectionListener);
-//		this.labelList.getJList().addMouseListener(mouseListener);
+		
+		getImage();
+		
+		imagePanel.add(imageLabel);
+		imagePanel.setOpaque(true);	
 		
 		toolPanel.setLayout(new GridLayout(0,2));
 		toolPanel.add(newLabel);
@@ -172,11 +165,17 @@ public class MainFrame extends JFrame{
 		this.setContentPane(appPanel);
         //Create and set up the image panel.
 
-		imagePanel = new MainPanel(imageFilename, labels, labelList);
-		imagePanel.setOpaque(true); //content panes must be opaque
 
+		imageLabeler = new MainPanel(imageFilename, labels, labelList);
+		imageLabeler.setOpaque(false); //content panes must be opaque
+		imageTool.setLayout(new BorderLayout());
+		
+
+		imageTool.add(imageLabeler, BorderLayout.CENTER);
+		imageTool.add(imagePanel, BorderLayout.CENTER);
+		
 		appPanel.add(secondPanel);
-		appPanel.add(imagePanel);
+		appPanel.add(imageTool);
 		this.setJMenuBar(menuBar);
 
 		//display all the stuff
@@ -187,15 +186,8 @@ public class MainFrame extends JFrame{
 	@Override
 	public void paint(Graphics g){
 		//super.paint(g);
-		super.paintComponents(g);
-		imagePanel.paintComponents(imagePanel.getGraphics());
-		
-		//TODO: what is this ?
-//		if (labels.getPoints().size() != 0) {
-//			for (PointsLabelPair label : labels.getPoints()) {
-//				//labelsList.add
-//			}
-//		}
+		super.paint(g);
+		imageTool.paint(imageTool.getGraphics());
 	}
 	
 	/**
@@ -214,14 +206,33 @@ public class MainFrame extends JFrame{
 	}
 	
 	public void finishLabel(){
-		imagePanel.finishLabel(true);
+		imageLabeler.finishLabel(true);
 	}
 	
 	public void loadNewImage() throws Exception{
 		FileChooser fc = new FileChooser();
 		labels = new ImageLabels();
-		imagePanel.resetImage(fc.getPath(), labels);
-		imagePanel.repaint();
+		this.imageFilename = fc.getPath();
+
+		ImageIcon icon = new ImageIcon(imageFilename);
+		imageLabel.setIcon(icon);
+		imageLabeler.resetLabels();
+		imageTool.repaint();
+	}
+	
+	public void getImage() throws Exception{
+
+		this.image = ImageIO.read(new File(imageFilename));
+	
+		if (image.getWidth() > 800 || image.getHeight() > 600) {
+			int newWidth = image.getWidth() > 800 ? 800 : (image.getWidth() * 600)/image.getHeight();
+			int newHeight = image.getHeight() > 600 ? 600 : (image.getHeight() * 800)/image.getWidth();
+			System.out.println("SCALING TO " + newWidth + "x" + newHeight );
+			Image scaledImage = image.getScaledInstance(newWidth, newHeight, Image.SCALE_FAST);
+			image = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+			image.getGraphics().drawImage(scaledImage, 0, 0, this);
+		}
+		this.imageLabel = new JLabel(new ImageIcon( this.image ));
 	}
 
 }

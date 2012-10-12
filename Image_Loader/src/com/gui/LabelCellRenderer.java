@@ -8,6 +8,10 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
 public class LabelCellRenderer extends JLabel implements ListCellRenderer {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final Color HIGHLIGHT_COLOR = new Color(0, 0, 128);
 	 
 	public LabelCellRenderer() {

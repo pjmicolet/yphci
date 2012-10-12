@@ -1,11 +1,5 @@
 package com.gui;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -34,21 +28,6 @@ public class LabelList extends JPanel {
 		labelList.setVisibleRowCount(6);
 		JScrollPane pane = new JScrollPane(labelList);
 		
-//		MouseListener mouseListener = new MouseAdapter() {
-//		      public void mouseClicked(MouseEvent mouseEvent) {
-//		        JList theList = (JList) mouseEvent.getSource();
-//		        if (mouseEvent.getClickCount() == 1) {
-//		          int index = theList.locationToIndex(mouseEvent.getPoint());
-//		          if (index >= 0) {
-//		            Object o = theList.getModel().getElementAt(index);
-//		            isSelected = true;
-//		            selectedIndex = index;
-//		            System.out.println("Clicked on: " + index);
-//		          }
-//		        }
-//		      }
-//		    }; 
-//		 this.labelList.addMouseListener(mouseListener);
 		add(pane);
 	}
 
