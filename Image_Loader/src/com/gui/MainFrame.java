@@ -1,7 +1,6 @@
 package com.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -23,6 +22,7 @@ import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -97,6 +97,7 @@ public class MainFrame extends JFrame{
 			public void valueChanged(ListSelectionEvent listEvent) {
 		        JList theList = (JList) listEvent.getSource();
 		          	int index = theList.getSelectedIndex();
+		          	System.out.printf("clicked on index %d, label: %s\n", index, labels.getPoints().get(index).getLabel());
 		        	if (index >= 0) {
 		            labelList.setIsSelected(true);
 		            labelList.setSelectedIndex(index);
@@ -131,7 +132,44 @@ public class MainFrame extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				finishLabel();
+				if (labels.getCurrentLabel().size() == 0) {
+					JOptionPane.showMessageDialog(null, 
+							"You can start drawing a new label by clicking on the image", "New Label", JOptionPane.OK_CANCEL_OPTION);					
+				}
+				else if (labels.getCurrentLabel().size() < 3) {
+					JOptionPane.showMessageDialog(null, 
+							"You need to draw at least 3 points to finish a label", "New Label", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else {
+					finishLabel();
+				}
+			}
+		});
+		
+		editLabel.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				
+				if (labelList.getIsSelected()) {
+					String newName = JOptionPane.showInputDialog(null, 
+							"Enter a new name for this label", "Edit Label", 1);
+					if (!newName.isEmpty()) {
+						int index = labelList.getSelectedIndex();
+						labels.getPoints().get(index).setLabel(newName);
+						labelList.updateName(newName);
+						JOptionPane.showMessageDialog(null, 
+								"Name was successfully changed!", "Edit Label", JOptionPane.INFORMATION_MESSAGE);
+					}
+				}
+				else if (labels.getCurrentLabel().size() < 3) {
+					JOptionPane.showMessageDialog(null, 
+							"You need to draw at least 3 points to finish a label", "New Label", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else {
+					finishLabel();
+				}
 			}
 		});
 		
@@ -144,6 +182,7 @@ public class MainFrame extends JFrame{
 					System.out.println(index);
 					labelList.deleteElement(index);
 					labels.removeLabel(index);
+					labelList.setIsSelected(false);
 				}
 				
 				imageTool.repaint();

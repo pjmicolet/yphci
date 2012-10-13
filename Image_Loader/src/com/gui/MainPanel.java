@@ -121,15 +121,12 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 			g2.setColor(Color.CYAN);
 			g2.fillPolygon(labels.getPoints().get(labelsList.getSelectedIndex()).getPolygon());
 			g2.drawPolygon(labels.getPoints().get(labelsList.getSelectedIndex()).getPolygon());
+//			System.out.printf("We are currently selecting %d and the name of the last label is %s \n", labelsList.getSelectedIndex(), labels.getPoints().get(labelsList.getSelectedIndex()).getLabel());
 		}
-		
-		System.out.println("Yolo");
-		
 	}
 
 
 	public void drawLabel(PointsLabelPair label, Graphics g2) {
-		//Graphics2D g = (Graphics2D)g2;
 		g2.setColor(Color.PINK);
 		for(int i = 0; i < label.size(); i++) {
 			Point currentLabel = label.get(i);
@@ -148,7 +145,6 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 			Point firstPoint = label.get(0);
 			Point lastPoint = label.get(label.size() - 1);
 
-			Graphics2D g = (Graphics2D) g2;
 			g2.setColor(Color.PINK);
 			g2.drawLine(firstPoint.getX(), firstPoint.getY(), lastPoint.getX(), lastPoint.getY());
 		}
@@ -172,12 +168,37 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 		if (isCurrentLabel) {
 			String labelName = JOptionPane.showInputDialog(null,
 					"Enter object's label: ", "HCI FTW", 1);
-			if (labelName != null && labelName != " ") {
-				label.setLabel(labelName);
-			};
+			boolean complete = false;
+			while (!complete) {
+
+				if(labelName == null){
+					int answer = JOptionPane.showConfirmDialog(null, 
+							"Are you sure you want to delete this label?", "Warning", JOptionPane.YES_NO_OPTION);
+				    if (answer == JOptionPane.YES_OPTION) {
+				      labels.resetCurrentLabel();
+				      repaint();
+				      return;
+				    }
+				    else{
+				    	labelName = "";
+				    }
+				}
+				
+				else if (!labelName.isEmpty()) {
+					label.setLabel(labelName);
+					complete = true;
+				}
+				else{
+					labelName = JOptionPane.showInputDialog(null,
+					"Please enter object's label: ", "HCI FTW", 1);
+				}
+				
+			}
 		}
-		labelsList.addElement(label.getLabel());
 		labels.closeCurrentLabel();
+		labelsList.addElement(label.getLabel());
+		System.out.println("New label added: " + labels.getPoints().get(labels.getPoints().size() - 1).getLabel());
+		System.out.println("index: " + (labels.getPoints().size() - 1));
 	}
 	
 	public void resetLabels(){
@@ -197,6 +218,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 		Graphics2D g = (Graphics2D)this.getGraphics();
 		//Graphics g = this.getGraphics();
 		PointsLabelPair currentLabel = labels.getCurrentLabel();
+		System.out.println("curr label: " + currentLabel.getLabel());
 		g.setColor(Color.PINK);
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			if (currentLabel.size() != 0) {

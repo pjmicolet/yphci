@@ -53,7 +53,13 @@ public class ImageLabels {
 	}
 
 	public void closeCurrentLabel() {
-		pointsAndLabels.add(currentLabel);
+		if (pointsAndLabels.contains(currentLabel)) {
+			int currLabelIndex = pointsAndLabels.indexOf(currentLabel);
+			pointsAndLabels.set(currLabelIndex, currentLabel);			
+		}
+		else {
+			pointsAndLabels.add(currentLabel);
+		}
 		currentLabelFlag = false;
 	}
 	
@@ -82,6 +88,10 @@ public class ImageLabels {
 	
 	public int size(){
 		return pointsAndLabels.size();
+	}
+
+	public void resetCurrentLabel() {
+		this.currentLabel = new PointsLabelPair();
 	}
 	
 

@@ -62,5 +62,8 @@ public class LabelList extends JPanel {
 	public void setSelectedIndex(int index) {
 		selectedIndex = index;
 	}
-
+	
+	public void updateName(String newName){
+		listModel.set(selectedIndex, newName);
+	}
 }
