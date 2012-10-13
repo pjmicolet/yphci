@@ -5,17 +5,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -30,10 +22,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private BufferedImage image;
-	private String imageName;
 	private ImageLabels labels;
-    private JLabel picLabel;
     private boolean dragging = false;
     private PointsLabelPair currentLabel = null;
 	private int dragIndex;
@@ -50,7 +39,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 	 * @param imageName - path to image
 	 * @throws Exception if error loading the image
 	 */
-	public MainPanel(String imageName, ImageLabels labels, LabelList labelsList) throws Exception{
+	public MainPanel(ImageLabels labels, LabelList labelsList) throws Exception{
 		this();
 
 		setSize(panelSize);
@@ -59,48 +48,6 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 		setMaximumSize(panelSize);
 		this.labels = labels;
 		this.labelsList = labelsList;
-		this.imageName = imageName;
-		//getImage();
-		//addImage();
-		//this.add( picLabel );
-	}
-
-	/**
-	 * Displays the image
-	 */
-	public void showImage() {
-		Graphics g = this.getGraphics();
-		if (image != null) {
-			g.drawImage(
-					image, 0, 0, null);
-		}
-	}
-
-	@Deprecated
-	public void getImage() throws IOException {
-		image = ImageIO.read(new File(imageName));
-		if (image.getWidth() > 800 || image.getHeight() > 600) {
-			int newWidth = image.getWidth() > 800 ? 800 : (image.getWidth() * 600)/image.getHeight();
-			int newHeight = image.getHeight() > 600 ? 600 : (image.getHeight() * 800)/image.getWidth();
-			System.out.println("SCALING TO " + newWidth + "x" + newHeight );
-			Image scaledImage = image.getScaledInstance(newWidth, newHeight, Image.SCALE_FAST);
-			image = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
-			image.getGraphics().drawImage(scaledImage, 0, 0, this);
-		}
-
-	}
-
-	public void addImage() throws IOException {
-		this.image = ImageIO.read(new File(imageName));
-		if (image.getWidth() > 800 || image.getHeight() > 600) {
-			int newWidth = image.getWidth() > 800 ? 800 : (image.getWidth() * 600)/image.getHeight();
-			int newHeight = image.getHeight() > 600 ? 600 : (image.getHeight() * 800)/image.getWidth();
-			System.out.println("SCALING TO " + newWidth + "x" + newHeight );
-			Image scaledImage = image.getScaledInstance(newWidth, newHeight, Image.SCALE_FAST);
-			image = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
-			image.getGraphics().drawImage(scaledImage, 0, 0, this);
-		}
-		this.picLabel = new JLabel(new ImageIcon( this.image ));
 	}
 
 	@Override
@@ -111,7 +58,6 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 		g.setColor(Color.PINK);
 		g2.setColor(Color.CYAN);
 		for(PointsLabelPair label : labels.getPoints()) {
-			//g2.drawPolygon(label.getPolygon());
 			drawLabel(label, g);
 			finishLabel(label, g);
 		}
@@ -121,11 +67,14 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 			g2.setColor(Color.CYAN);
 			g2.fillPolygon(labels.getPoints().get(labelsList.getSelectedIndex()).getPolygon());
 			g2.drawPolygon(labels.getPoints().get(labelsList.getSelectedIndex()).getPolygon());
-//			System.out.printf("We are currently selecting %d and the name of the last label is %s \n", labelsList.getSelectedIndex(), labels.getPoints().get(labelsList.getSelectedIndex()).getLabel());
 		}
 	}
 
-
+	/**
+	 * Given a PointsLabelPair object, it will draw each vertice and line
+	 * @param label
+	 * @param g2
+	 */
 	public void drawLabel(PointsLabelPair label, Graphics g2) {
 		g2.setColor(Color.PINK);
 		for(int i = 0; i < label.size(); i++) {
@@ -137,7 +86,6 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 			g2.fillOval(currentLabel.getX() - 5, currentLabel.getY() - 5, 10, 10);
 		}
 	}
-
 
 	public void finishLabel(PointsLabelPair label, Graphics g2) {
 		//if there are less than 3 vertices than nothing to be completed
@@ -197,8 +145,6 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 		}
 		labels.closeCurrentLabel();
 		labelsList.addElement(label.getLabel());
-		System.out.println("New label added: " + labels.getPoints().get(labels.getPoints().size() - 1).getLabel());
-		System.out.println("index: " + (labels.getPoints().size() - 1));
 	}
 	
 	public void resetLabels(){
