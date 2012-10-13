@@ -135,6 +135,21 @@ public class MainFrame extends JFrame{
 			}
 		});
 		
+		deleteLabel.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (labelList.getIsSelected()){
+					int index = labelList.getSelectedIndex();
+					System.out.println(index);
+					labelList.deleteElement(index);
+					labels.removeLabel(index);
+				}
+				
+				imageTool.repaint();
+			}
+		});
+		
 		menuBar.add(file);
 		menuBar.add(edit);
 		

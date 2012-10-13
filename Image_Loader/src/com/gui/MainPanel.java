@@ -116,8 +116,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 			finishLabel(label, g);
 		}
 		drawLabel(labels.getCurrentLabel(), g);
-
-		if (labelsList.getIsSelected()) {
+		if (labelsList.getIsSelected() && labels.size() != 0) {
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
 			g2.setColor(Color.CYAN);
 			g2.fillPolygon(labels.getPoints().get(labelsList.getSelectedIndex()).getPolygon());

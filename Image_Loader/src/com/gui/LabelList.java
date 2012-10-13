@@ -36,6 +36,10 @@ public class LabelList extends JPanel {
 		listModel.addElement(label);
 		System.out.println("Size: " + listModel.size());
 	}
+	
+	public void deleteElement(int index){
+		listModel.remove(index);
+	}
 
 	public boolean getIsSelected() {
 		// TODO Auto-generated method stub

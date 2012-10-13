@@ -56,6 +56,10 @@ public class ImageLabels {
 		pointsAndLabels.add(currentLabel);
 		currentLabelFlag = false;
 	}
+	
+	public void removeLabel(int index){
+		pointsAndLabels.remove(index);
+	}
 
 	public PointsLabelPair getPoint(Point clickedPoint) {
 		int x = clickedPoint.getX();
@@ -75,5 +79,10 @@ public class ImageLabels {
 		}
 		return null;
 	}
+	
+	public int size(){
+		return pointsAndLabels.size();
+	}
+	
 
 }
