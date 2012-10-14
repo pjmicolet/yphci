@@ -9,9 +9,6 @@ public class PointsLabelPair {
 	private ArrayList<Point> points;
 	private Polygon polygon;
 	private String label;
-<<<<<<< HEAD
-	
-=======
 	private Point lastPoint;
 
 	public PointsLabelPair() {
@@ -24,7 +21,6 @@ public class PointsLabelPair {
 		this.polygon = new Polygon();
 		this.label = lbl;
 	}
->>>>>>> 0ef14b09658806a00356f2da02d293d134aa773a
 	public ArrayList<Point> getPoints() {
 		return points;
 	}
@@ -37,15 +33,6 @@ public class PointsLabelPair {
 	public void setLabel(String label) {
 		this.label = label;
 	}
-<<<<<<< HEAD
-	public int size() {
-		return points.size();
-	}
-	public Point get(int index) {
-		return points.get(index);
-	}
-}
-=======
 	public void addPoint(int x, int y) {
 		lastPoint = new Point(x, y);
 		points.add(lastPoint);
@@ -85,6 +72,4 @@ public class PointsLabelPair {
 		}
 		return 0;
 	}
-
 }
->>>>>>> 0ef14b09658806a00356f2da02d293d134aa773a

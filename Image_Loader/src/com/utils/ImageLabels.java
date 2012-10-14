@@ -35,7 +35,6 @@ public class ImageLabels {
 		// the ArrayList with labels and the corresponding points for each of them.
 		return null;
 	}
-<<<<<<< HEAD
 	
 	public void addNewLabel() {
 		if (currentLabel != null) {
@@ -53,11 +52,9 @@ public class ImageLabels {
 		}
 	}
 	
-	public PointsLabelPair getCurrentLabel() {
-		return this.currentLabel;
-	}
-}
-=======
+//	public PointsLabelPair getCurrentLabel() {
+//		return this.currentLabel;
+//	}
 
 	public PointsLabelPair getCurrentLabel() {
 		if (currentLabelFlag) 
@@ -103,4 +100,3 @@ public class ImageLabels {
 	}
 
 }
->>>>>>> 0ef14b09658806a00356f2da02d293d134aa773a
