@@ -316,5 +316,4 @@ public class MainFrame extends JFrame{
 		this.labelList.deleteAllElements();
 		imageLabeler.setLabelsList(labelList);
 	}
-
 }

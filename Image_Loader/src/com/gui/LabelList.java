@@ -20,7 +20,6 @@ public class LabelList extends JPanel {
 
 	public LabelList(ImageLabels imgLabels) {
 		this.listModel = new DefaultListModel();
-		this.labels = imgLabels;
 		this.labelList = new JList(this.listModel);
 
 		labelList.setCellRenderer(new LabelCellRenderer());

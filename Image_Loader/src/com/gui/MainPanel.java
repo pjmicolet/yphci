@@ -28,6 +28,8 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 	private int dragIndex;
 	private LabelList labelsList;
 	private Dimension panelSize = new Dimension(800,600);
+	private int imgWidth;
+	private int imgHeight; 
 
 	public MainPanel() {
 		addMouseListener(this);
@@ -48,6 +50,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 		setMaximumSize(panelSize);
 		this.labels = labels;
 		this.labelsList = labelsList;
+		
 	}
 
 	@Override
@@ -230,6 +233,10 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 			int x = e.getX();
 			int y = e.getY();
 
+			if (x > panelSize.getWidth() || y > panelSize.getHeight() 
+					|| y < 2 || x < 2 ) {
+				return;
+			}
 			Point clickedPoint = new Point(x, y);
 			//System.out.println("x: " + x + " y: " + y);
 			currentLabel.getPoints().set(dragIndex, clickedPoint);
