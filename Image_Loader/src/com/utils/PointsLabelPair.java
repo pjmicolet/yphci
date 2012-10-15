@@ -2,6 +2,7 @@ package com.utils;
 
 import java.awt.Polygon;
 import java.util.ArrayList;
+import com.utils.Point;
 
 public class PointsLabelPair {
 
@@ -9,12 +10,17 @@ public class PointsLabelPair {
 	private Polygon polygon;
 	private String label;
 	private Point lastPoint;
-	
+
 	public PointsLabelPair() {
 		this.points = new ArrayList<Point>();
 		this.polygon = new Polygon();
 	}
-	
+
+	public PointsLabelPair(String lbl) {
+		this.points = new ArrayList<Point>();
+		this.polygon = new Polygon();
+		this.label = lbl;
+	}
 	public ArrayList<Point> getPoints() {
 		return points;
 	}
@@ -41,6 +47,23 @@ public class PointsLabelPair {
 	public Point get(int index) {
 		return points.get(index);
 	}
+
+	public void updatePolygon() {
+		int npoints = this.points.size();
+		int[] xpoints = new int[npoints];
+		int[] ypoints = new int[npoints];
+
+		for (int i = 0; i < npoints; i++) {
+			xpoints[i] = this.points.get(i).getX();
+			ypoints[i] = this.points.get(i).getY();
+		}
+
+		this.polygon = new Polygon(xpoints, ypoints, npoints);
+	}
+
+	public Polygon getPolygon() {
+		return polygon;
+	}
 	public int getClosest(Point point) {
 		for (Point p : points) {
 			if (p.distance(point.getX(), point.getY()) <= 5) {
@@ -49,5 +72,6 @@ public class PointsLabelPair {
 		}
 		return 0;
 	}
+
 
 }

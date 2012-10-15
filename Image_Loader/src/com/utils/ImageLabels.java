@@ -6,9 +6,9 @@ public class ImageLabels {
 
 
 	private ArrayList<PointsLabelPair> pointsAndLabels;
-	
+
 	private PointsLabelPair currentLabel;
-	
+
 	private boolean currentLabelFlag;
 
 	public ImageLabels() {
@@ -16,7 +16,13 @@ public class ImageLabels {
 		currentLabel = new PointsLabelPair();
 		currentLabelFlag = true;
 	}
-	
+
+	public ImageLabels(ArrayList<PointsLabelPair> points) {
+		pointsAndLabels = points;
+		currentLabel = new PointsLabelPair();
+		currentLabelFlag = true;
+	}
+
 	public ImageLabels(String fileName) {
 		pointsAndLabels = parseXMLFile(fileName);
 	}
@@ -43,11 +49,22 @@ public class ImageLabels {
 
 	public void updateCurrentLabel(PointsLabelPair currentLabel2) {
 		this.currentLabel = currentLabel2;
+		this.currentLabel.updatePolygon();
 	}
 
 	public void closeCurrentLabel() {
-		pointsAndLabels.add(currentLabel);
+		if (pointsAndLabels.contains(currentLabel)) {
+			int currLabelIndex = pointsAndLabels.indexOf(currentLabel);
+			pointsAndLabels.set(currLabelIndex, currentLabel);			
+		}
+		else {
+			pointsAndLabels.add(currentLabel);
+		}
 		currentLabelFlag = false;
+	}
+	
+	public void removeLabel(int index){
+		pointsAndLabels.remove(index);
 	}
 
 	public PointsLabelPair getPoint(Point clickedPoint) {
@@ -55,18 +72,27 @@ public class ImageLabels {
 		int y = clickedPoint.getY();
 		for (PointsLabelPair pair : pointsAndLabels) {
 			ArrayList<Point> pairPoints = pair.getPoints();
-			
+
 			for (Point p : pairPoints) {
 				int pointX = p.getX();
 				int pointY = p.getY();
-				
+
 				if (pointX == x && pointY == y) {
 					return pair;
 				}
 			}
-			
+
 		}
 		return null;
 	}
 	
+	public int size(){
+		return pointsAndLabels.size();
+	}
+
+	public void resetCurrentLabel() {
+		this.currentLabel = new PointsLabelPair();
+	}
+	
+
 }
