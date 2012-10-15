@@ -10,7 +10,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 public class FileChooser extends JPanel implements ActionListener{
@@ -34,7 +33,6 @@ public class FileChooser extends JPanel implements ActionListener{
         log = new JTextArea(5,20);
         log.setMargin(new Insets(5,5,5,5));
         log.setEditable(false);
-        JScrollPane logScrollPane = new JScrollPane(log);
  
         //Create a file chooser
         fc = new JFileChooser();
