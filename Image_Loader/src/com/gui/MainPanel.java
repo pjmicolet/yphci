@@ -131,7 +131,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 				    	labelName = "";
 				    }
 				}
-				
+
 				else if (!labelName.isEmpty()) {
 					label.setLabel(labelName);
 					complete = true;
@@ -140,17 +140,17 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 					labelName = JOptionPane.showInputDialog(null,
 					"Please enter object's label: ", "HCI FTW", 1);
 				}
-				
+
 			}
 		}
 		labels.closeCurrentLabel();
 		labelsList.addElement(label.getLabel());
 	}
-	
+
 	public void resetLabels(){
 		labels = new ImageLabels();
 	}
-	
+
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		int x = e.getX();
@@ -238,4 +238,13 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 			repaint();
 		}
 	}
+	
+	public void setLabels(ImageLabels labels){
+		this.labels = labels;
+	}
+	
+	public void setLabelsList(LabelList labelList){
+		this.labelsList = labelList;
+	}
+	
 }
