@@ -65,6 +65,8 @@ public class MainFrame extends JFrame{
 	private String imageFilename;
 
 	private BufferedImage image;
+	
+	private ImageIcon imageIcon;
 
 	/**
 	 * Runs the program
@@ -164,7 +166,6 @@ public class MainFrame extends JFrame{
 			public void valueChanged(ListSelectionEvent listEvent) {
 		        JList theList = (JList) listEvent.getSource();
 		          	int index = theList.getSelectedIndex();
-		          	System.out.printf("clicked on index %d, label: %s\n", index, labels.getPoints().get(index).getLabel());
 		        	if (index >= 0) {
 		            labelList.setIsSelected(true);
 		            labelList.setSelectedIndex(index);
@@ -274,13 +275,16 @@ public class MainFrame extends JFrame{
 	 */
 	public void loadNewImage() throws Exception{
 		FileChooser fc = new FileChooser();
-		labels = new ImageLabels();
 		this.imageFilename = fc.getPath();
-
-		ImageIcon icon = new ImageIcon(imageFilename);
-		imageLabel.setIcon(icon);
-		imageLabeler.resetLabels();
+		imageIcon = new ImageIcon(imageFilename);
+		Image img = imageIcon.getImage();
+		img = img.getScaledInstance(800, 600,  java.awt.Image.SCALE_SMOOTH);
+		imageIcon.setImage(img);
+     	imageLabel.setIcon(imageIcon);
+		resetLabels();
 		imageTool.repaint();
+		
+		
 	}
 
 	/**
@@ -300,6 +304,17 @@ public class MainFrame extends JFrame{
 			image.getGraphics().drawImage(scaledImage, 0, 0, this);
 		}
 		this.imageLabel = new JLabel(new ImageIcon( this.image ));
+	}
+	
+	/**
+	 * Resets the current labels and deletes all elements within the labelList
+	 * @throws Exception
+	 */
+	public void resetLabels() throws Exception{
+		this.labels = new ImageLabels();
+		imageLabeler.setLabels(labels);
+		this.labelList.deleteAllElements();
+		imageLabeler.setLabelsList(labelList);
 	}
 
 }

@@ -238,4 +238,13 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 			repaint();
 		}
 	}
+	
+	public void setLabels(ImageLabels labels){
+		this.labels = labels;
+	}
+	
+	public void setLabelsList(LabelList labelList){
+		this.labelsList = labelList;
+	}
+	
 }
