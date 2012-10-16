@@ -33,7 +33,7 @@ import com.utils.ImageLabels;
 public class MainFrame extends JFrame{
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private JPanel appPanel = new JPanel();
 	private JPanel toolPanel = new JPanel();
 	private JPanel labelTools = new JPanel();
@@ -41,16 +41,16 @@ public class MainFrame extends JFrame{
 	private JPanel imageTool = new JPanel();
 
 	private JLabel imageLabel = new JLabel();
-	
+
 	private JButton newLabel = new JButton("New Label");
 	private JButton editLabel = new JButton("Edit Label");
 	private JButton deleteLabel = new JButton("Delete Label");
-	
+
 	private JMenuBar menuBar = new JMenuBar();
 
 	private JMenu file = new JMenu("File");
 	private JMenu edit = new JMenu("Edit");
-	
+
 	private JMenuItem newImage = new JMenuItem("New Image");
 	private JMenuItem loadLabel = new JMenuItem("Load Label");
 	private JMenuItem saveLabel = new JMenuItem("Save Label");
@@ -58,14 +58,16 @@ public class MainFrame extends JFrame{
 	private JMenuItem redoLabel = new JMenuItem("Redo");
 
 	private MainPanel imageLabeler = new MainPanel();
-	
+
 	private ImageLabels labels;
-	
+
 	private LabelList labelList;
-	
+
 	private String imageFilename;
-	
+
 	private BufferedImage image;
+	
+	private ImageIcon imageIcon;
 
 	/**
 	 * Runs the program
@@ -81,8 +83,8 @@ public class MainFrame extends JFrame{
 			e.printStackTrace();
 		}
 	}
-	
-	
+
+
 	//TODO: Make this pretty.
 	/**
 	 * sets up application window
@@ -101,25 +103,25 @@ public class MainFrame extends JFrame{
 		  	public void windowActivated(WindowEvent event){
 		  	}
 		});
-		
+
 		//Get the image and scale it.
 		getImage();
-		
+
 		labelList = new LabelList(this.labels);
 
 		menuBar.add(file);
 		menuBar.add(edit);
-		
+
 		file.add(newImage);
 		file.add(loadLabel);
 		file.add(saveLabel);
-		
+
 		edit.add(undoLabel);
 		edit.add(redoLabel);
-		
+
 		imagePanel.add(imageLabel);
 		imagePanel.setOpaque(true);	
-		
+
 		/*
 		 * We add all the buttons to the toolPanel
 		 */
@@ -131,14 +133,14 @@ public class MainFrame extends JFrame{
 		toolPanel.add(deleteLabel);
 		toolPanel.add(Box.createGlue());
 		toolPanel.add(labelList);
-		
+
 		/*
 		 * This is is the panel that contains the list of labels and the buttons.
 		 */
 		labelTools.setLayout(new BoxLayout(labelTools, BoxLayout.Y_AXIS));
 		labelTools.add(toolPanel);
 		labelTools.add(labelList);
-		
+
 		//setup main window panel
 		appPanel = new JPanel();
 		this.setLayout(new BoxLayout(appPanel, BoxLayout.X_AXIS));
@@ -152,34 +154,33 @@ public class MainFrame extends JFrame{
 
 		imageTool.add(imageLabeler, BorderLayout.CENTER);
 		imageTool.add(imagePanel, BorderLayout.CENTER);
-		
+
 		appPanel.add(labelTools);
 		appPanel.add(imageTool);
 		this.setJMenuBar(menuBar);
 
 		//display all the stuff
 		this.pack();	
-	
+
 		ListSelectionListener selectionListener = new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent listEvent) {
 		        JList theList = (JList) listEvent.getSource();
 		          	int index = theList.getSelectedIndex();
-		          	System.out.printf("clicked on index %d, label: %s\n", index, labels.getPoints().get(index).getLabel());
 		        	if (index >= 0) {
 		            labelList.setIsSelected(true);
 		            labelList.setSelectedIndex(index);
 		            imageLabeler.repaint();
 		        }				
-				
+
 			}
-			
+
 		};
 		this.labelList.getJList().addListSelectionListener(selectionListener);
-	
+
 
 		newLabel.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
@@ -196,9 +197,9 @@ public class MainFrame extends JFrame{
 				}
 			}
 		});
-		
+
 		editLabel.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (labelList.getIsSelected()) {
@@ -221,9 +222,9 @@ public class MainFrame extends JFrame{
 				}
 			}
 		});
-		
+
 		deleteLabel.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (labelList.getIsSelected()){
@@ -233,13 +234,13 @@ public class MainFrame extends JFrame{
 					labels.removeLabel(index);
 					labelList.setIsSelected(false);
 				}
-				
+
 				imageTool.repaint();
 			}
 		});
-		
+
 		newImage.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
@@ -270,14 +271,14 @@ public class MainFrame extends JFrame{
 		super.paint(g);
 		imageTool.paint(imageTool.getGraphics());
 	}
-	
+
 	/**
 	 * Finishes the current label.
 	 */
 	public void finishLabel(){
 		imageLabeler.finishLabel(true);
 	}
-	
+
 	/**
 	 * Starts a FileChooser window to choose a new image and then sets that image as the
 	 * current JLabel.
@@ -285,15 +286,18 @@ public class MainFrame extends JFrame{
 	 */
 	public void loadNewImage() throws Exception{
 		FileChooser fc = new FileChooser();
-		labels = new ImageLabels();
 		this.imageFilename = fc.getPath();
-
-		ImageIcon icon = new ImageIcon(imageFilename);
-		imageLabel.setIcon(icon);
-		imageLabeler.resetLabels();
+		imageIcon = new ImageIcon(imageFilename);
+		Image img = imageIcon.getImage();
+		img = img.getScaledInstance(800, 600,  java.awt.Image.SCALE_SMOOTH);
+		imageIcon.setImage(img);
+     	imageLabel.setIcon(imageIcon);
+		resetLabels();
 		imageTool.repaint();
+		
+		
 	}
-	
+
 	/**
 	 * Uses the image path to set the image, rescale it and put it in a JLabel.
 	 * @throws Exception
@@ -301,7 +305,7 @@ public class MainFrame extends JFrame{
 	public void getImage() throws Exception{
 
 		this.image = ImageIO.read(new File(imageFilename));
-	
+
 		if (image.getWidth() > 800 || image.getHeight() > 600) {
 			int newWidth = image.getWidth() > 800 ? 800 : (image.getWidth() * 600)/image.getHeight();
 			int newHeight = image.getHeight() > 600 ? 600 : (image.getHeight() * 800)/image.getWidth();
@@ -312,5 +316,15 @@ public class MainFrame extends JFrame{
 		}
 		this.imageLabel = new JLabel(new ImageIcon( this.image ));
 	}
-
+	
+	/**
+	 * Resets the current labels and deletes all elements within the labelList
+	 * @throws Exception
+	 */
+	public void resetLabels() throws Exception{
+		this.labels = new ImageLabels();
+		imageLabeler.setLabels(labels);
+		this.labelList.deleteAllElements();
+		imageLabeler.setLabelsList(labelList);
+	}
 }
