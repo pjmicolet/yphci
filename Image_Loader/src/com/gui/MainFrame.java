@@ -26,6 +26,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.undo.UndoManager;
 
 import com.utils.ImageLabels;
 
@@ -248,6 +249,16 @@ public class MainFrame extends JFrame{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+			}
+		});
+		
+		undoLabel.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				UndoManager undo = new UndoManager();
+				undo.undo();
 			}
 		});
 	}
