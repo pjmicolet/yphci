@@ -34,6 +34,12 @@ public class LabelList extends JPanel {
 		System.out.println("Size: " + listModel.size());
 	}
 	
+	public void addAllElements(ImageLabels labels){
+		for(int i = 0; i < labels.size(); i++){
+			listModel.addElement(labels.getPoints().get(i).getLabel());
+		}
+	}
+	
 	public void deleteElement(int index){
 		listModel.remove(index);
 	}

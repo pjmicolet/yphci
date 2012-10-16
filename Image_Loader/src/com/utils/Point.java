@@ -1,4 +1,5 @@
 package com.utils;
+import java.io.Serializable;
 import java.lang.Math;
 
 /**
@@ -6,7 +7,11 @@ import java.lang.Math;
  * @author Michal
  *
  */
-public class Point {
+public class Point implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int x = 0;
 	private int y = 0;
 	

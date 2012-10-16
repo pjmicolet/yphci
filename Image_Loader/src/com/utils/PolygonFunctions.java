@@ -1,8 +1,14 @@
 package com.utils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class PolygonFunctions {
+public class PolygonFunctions implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * list of current polygon's vertices 
 	 */

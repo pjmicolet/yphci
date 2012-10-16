@@ -1,9 +1,15 @@
 package com.utils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class ImageLabels {
+public class ImageLabels implements Serializable{
 
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private ArrayList<PointsLabelPair> pointsAndLabels;
 

@@ -10,6 +10,10 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import javax.imageio.ImageIO;
 import javax.swing.Box;
@@ -223,6 +227,17 @@ public class MainFrame extends JFrame{
 			}
 		});
 
+		loadLabel.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				System.out.println("Wololo");
+				loadLabels();
+				imageTool.repaint();
+			}
+		});
+		
 		deleteLabel.addActionListener(new ActionListener() {
 
 			@Override
@@ -248,6 +263,20 @@ public class MainFrame extends JFrame{
 					loadNewImage();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+		
+		saveLabel.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				try {
+					saveLabels();
+				}
+				catch(Exception e){
 					e.printStackTrace();
 				}
 			}
@@ -326,5 +355,40 @@ public class MainFrame extends JFrame{
 		imageLabeler.setLabels(labels);
 		this.labelList.deleteAllElements();
 		imageLabeler.setLabelsList(labelList);
+	}
+	
+	/**
+	 * Saves a label using serialization magic.
+	 */
+	public void saveLabels(){
+		try {
+			System.out.println("File saved");
+
+			FileOutputStream fos = new FileOutputStream("labels");
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			oos.writeObject(labels);
+			oos.flush();
+			oos.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void loadLabels(){
+		try{
+			FileInputStream fis = new FileInputStream("labels");
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			labels = (ImageLabels) ois.readObject();
+			ois.close();
+
+			imageLabeler.setLabels(labels);
+			labelList.deleteAllElements();
+			labelList.addAllElements(labels);
+			imageLabeler.setLabelsList(labelList);
+			System.out.println("File loaded");
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
 	}
 }

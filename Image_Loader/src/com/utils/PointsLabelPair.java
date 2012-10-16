@@ -1,11 +1,16 @@
 package com.utils;
 
 import java.awt.Polygon;
+import java.io.Serializable;
 import java.util.ArrayList;
 import com.utils.Point;
 
-public class PointsLabelPair {
+public class PointsLabelPair implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private ArrayList<Point> points;
 	private Polygon polygon;
 	private String label;
