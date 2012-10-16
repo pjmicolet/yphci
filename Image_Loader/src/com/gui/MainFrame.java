@@ -359,6 +359,7 @@ public class MainFrame extends JFrame{
 	
 	/**
 	 * Saves a label using serialization magic.
+	 * TODO: Get it so that we don't always save under file called labels.
 	 */
 	public void saveLabels(){
 		try {
@@ -374,6 +375,9 @@ public class MainFrame extends JFrame{
 		}
 	}
 	
+	/**
+	 * Loads the labels and makes sure everything is nice and clean...ish
+	 */
 	public void loadLabels(){
 		try{
 			FileInputStream fis = new FileInputStream("labels");
