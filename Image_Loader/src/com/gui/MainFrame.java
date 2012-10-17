@@ -1,7 +1,6 @@
 package com.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -23,6 +22,7 @@ import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -32,21 +32,15 @@ import com.utils.ImageLabels;
 public class MainFrame extends JFrame{
 
 	private static final long serialVersionUID = 1L;
-
+	
 	private JPanel appPanel = new JPanel();
-
-	private MainPanel imageLabeler = new MainPanel();
-
 	private JPanel toolPanel = new JPanel();
-	private JPanel secondPanel = new JPanel();
-
-	private JLabel imageLabel = new JLabel();
+	private JPanel labelTools = new JPanel();
 	private JPanel imagePanel = new JPanel();
 	private JPanel imageTool = new JPanel();
+
+	private JLabel imageLabel = new JLabel();
 	
-	String imageFilename;
-
-
 	private JButton newLabel = new JButton("New Label");
 	private JButton editLabel = new JButton("Edit Label");
 	private JButton deleteLabel = new JButton("Delete Label");
@@ -56,19 +50,37 @@ public class MainFrame extends JFrame{
 	private JMenu file = new JMenu("File");
 	private JMenu edit = new JMenu("Edit");
 	
-	private LabelList labelList;
-	
 	private JMenuItem newImage = new JMenuItem("New Image");
 	private JMenuItem loadLabel = new JMenuItem("Load Label");
 	private JMenuItem saveLabel = new JMenuItem("Save Label");
-
 	private JMenuItem undoLabel = new JMenuItem("Undo");
 	private JMenuItem redoLabel = new JMenuItem("Redo");
+
+	private MainPanel imageLabeler = new MainPanel();
 	
 	private ImageLabels labels;
 	
+	private LabelList labelList;
+	
+	private String imageFilename;
+	
 	private BufferedImage image;
 
+	/**
+	 * Runs the program
+	 * @param argv path to an image
+	 */
+	public MainFrame(String imageFilename, ImageLabels labels) {
+		try {
+			this.labels = labels;
+			this.imageFilename = imageFilename;
+			setupGUI(imageFilename);
+		} catch (Exception e) {
+			System.err.println("Image: " + imageFilename);
+			e.printStackTrace();
+		}
+	}
+	
 	
 	//TODO: Make this pretty.
 	/**
@@ -89,14 +101,70 @@ public class MainFrame extends JFrame{
 		  	}
 		});
 		
-		//Sets up the buttons.
+		//Get the image and scale it.
+		getImage();
+		
 		labelList = new LabelList(this.labels);
+
+		menuBar.add(file);
+		menuBar.add(edit);
+		
+		file.add(newImage);
+		file.add(loadLabel);
+		file.add(saveLabel);
+		
+		edit.add(undoLabel);
+		edit.add(redoLabel);
+		
+		imagePanel.add(imageLabel);
+		imagePanel.setOpaque(true);	
+		
+		/*
+		 * We add all the buttons to the toolPanel
+		 */
+		toolPanel.setLayout(new GridLayout(0,2));
+		toolPanel.add(newLabel);
+		toolPanel.add(Box.createGlue());
+		toolPanel.add(editLabel);
+		toolPanel.add(Box.createGlue());
+		toolPanel.add(deleteLabel);
+		toolPanel.add(Box.createGlue());
+		toolPanel.add(labelList);
+		
+		/*
+		 * This is is the panel that contains the list of labels and the buttons.
+		 */
+		labelTools.setLayout(new BoxLayout(labelTools, BoxLayout.Y_AXIS));
+		labelTools.add(toolPanel);
+		labelTools.add(labelList);
+		
+		//setup main window panel
+		appPanel = new JPanel();
+		this.setLayout(new BoxLayout(appPanel, BoxLayout.X_AXIS));
+		this.setContentPane(appPanel);
+       
+		//Create and set up the image panel.
+
+		imageLabeler = new MainPanel(labels, labelList);
+		imageLabeler.setOpaque(false); //content panes must be opaque
+		imageTool.setLayout(new BorderLayout());
+
+		imageTool.add(imageLabeler, BorderLayout.CENTER);
+		imageTool.add(imagePanel, BorderLayout.CENTER);
+		
+		appPanel.add(labelTools);
+		appPanel.add(imageTool);
+		this.setJMenuBar(menuBar);
+
+		//display all the stuff
+		this.pack();	
 	
 		ListSelectionListener selectionListener = new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent listEvent) {
 		        JList theList = (JList) listEvent.getSource();
 		          	int index = theList.getSelectedIndex();
+		          	System.out.printf("clicked on index %d, label: %s\n", index, labels.getPoints().get(index).getLabel());
 		        	if (index >= 0) {
 		            labelList.setIsSelected(true);
 		            labelList.setSelectedIndex(index);
@@ -107,43 +175,67 @@ public class MainFrame extends JFrame{
 			
 		};
 		this.labelList.getJList().addListSelectionListener(selectionListener);
-		
-		getImage();
-		
-		imagePanel.add(imageLabel);
-		imagePanel.setOpaque(true);	
-		
-		toolPanel.setLayout(new GridLayout(0,2));
-		toolPanel.add(newLabel);
-		toolPanel.add(Box.createGlue());
-		toolPanel.add(editLabel);
-		toolPanel.add(Box.createGlue());
-		toolPanel.add(deleteLabel);
-		toolPanel.add(Box.createGlue());
-		toolPanel.add(labelList);
-		
-		secondPanel.setLayout(new BoxLayout(secondPanel, BoxLayout.Y_AXIS));
-		secondPanel.add(toolPanel);
-		secondPanel.add(labelList);
+	
 
 		newLabel.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				finishLabel();
+				if (labels.getCurrentLabel().size() == 0) {
+					JOptionPane.showMessageDialog(null, 
+							"You can start drawing a new label by clicking on the image", "New Label", JOptionPane.OK_CANCEL_OPTION);					
+				}
+				else if (labels.getCurrentLabel().size() < 3) {
+					JOptionPane.showMessageDialog(null, 
+							"You need to draw at least 3 points to finish a label", "New Label", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else {
+					finishLabel();
+				}
 			}
 		});
 		
-		menuBar.add(file);
-		menuBar.add(edit);
+		editLabel.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (labelList.getIsSelected()) {
+					String newName = JOptionPane.showInputDialog(null, 
+							"Enter a new name for this label", "Edit Label", 1);
+					if (!newName.isEmpty()) {
+						int index = labelList.getSelectedIndex();
+						labels.getPoints().get(index).setLabel(newName);
+						labelList.updateName(newName);
+						JOptionPane.showMessageDialog(null, 
+								"Name was successfully changed!", "Edit Label", JOptionPane.INFORMATION_MESSAGE);
+					}
+				}
+				else if (labels.getCurrentLabel().size() < 3) {
+					JOptionPane.showMessageDialog(null, 
+							"You need to draw at least 3 points to finish a label", "New Label", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else {
+					finishLabel();
+				}
+			}
+		});
 		
-		file.add(newImage);
-		file.add(loadLabel);
-		file.add(saveLabel);
-		
-		edit.add(undoLabel);
-		edit.add(redoLabel);
+		deleteLabel.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (labelList.getIsSelected()){
+					int index = labelList.getSelectedIndex();
+					System.out.println(index);
+					labelList.deleteElement(index);
+					labels.removeLabel(index);
+					labelList.setIsSelected(false);
+				}
+				
+				imageTool.repaint();
+			}
+		});
 		
 		newImage.addActionListener(new ActionListener() {
 			
@@ -158,28 +250,6 @@ public class MainFrame extends JFrame{
 				}
 			}
 		});
-
-		//setup main window panel
-		appPanel = new JPanel();
-		this.setLayout(new BoxLayout(appPanel, BoxLayout.X_AXIS));
-		this.setContentPane(appPanel);
-        //Create and set up the image panel.
-
-
-		imageLabeler = new MainPanel(imageFilename, labels, labelList);
-		imageLabeler.setOpaque(false); //content panes must be opaque
-		imageTool.setLayout(new BorderLayout());
-		
-
-		imageTool.add(imageLabeler, BorderLayout.CENTER);
-		imageTool.add(imagePanel, BorderLayout.CENTER);
-		
-		appPanel.add(secondPanel);
-		appPanel.add(imageTool);
-		this.setJMenuBar(menuBar);
-
-		//display all the stuff
-		this.pack();
 	}
 
 
@@ -191,24 +261,17 @@ public class MainFrame extends JFrame{
 	}
 	
 	/**
-	 * Runs the program
-	 * @param argv path to an image
+	 * Finishes the current label.
 	 */
-	public MainFrame(String imageFilename, ImageLabels labels) {
-		try {
-			this.labels = labels;
-			this.imageFilename = imageFilename;
-			setupGUI(imageFilename);
-		} catch (Exception e) {
-			System.err.println("Image: " + imageFilename);
-			e.printStackTrace();
-		}
-	}
-	
 	public void finishLabel(){
 		imageLabeler.finishLabel(true);
 	}
 	
+	/**
+	 * Starts a FileChooser window to choose a new image and then sets that image as the
+	 * current JLabel.
+	 * @throws Exception
+	 */
 	public void loadNewImage() throws Exception{
 		FileChooser fc = new FileChooser();
 		labels = new ImageLabels();
@@ -220,6 +283,10 @@ public class MainFrame extends JFrame{
 		imageTool.repaint();
 	}
 	
+	/**
+	 * Uses the image path to set the image, rescale it and put it in a JLabel.
+	 * @throws Exception
+	 */
 	public void getImage() throws Exception{
 
 		this.image = ImageIO.read(new File(imageFilename));

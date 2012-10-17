@@ -32,18 +32,19 @@ public class LabelList extends JPanel {
 	}
 
 	public void addElement(String label) {
-		// TODO Auto-generated method stub
 		listModel.addElement(label);
 		System.out.println("Size: " + listModel.size());
 	}
+	
+	public void deleteElement(int index){
+		listModel.remove(index);
+	}
 
 	public boolean getIsSelected() {
-		// TODO Auto-generated method stub
 		return isSelected;
 	}
 	
 	public int getSelectedIndex() {
-		// TODO Auto-generated method stub
 		return selectedIndex;
 	}
 
@@ -58,5 +59,8 @@ public class LabelList extends JPanel {
 	public void setSelectedIndex(int index) {
 		selectedIndex = index;
 	}
-
+	
+	public void updateName(String newName){
+		listModel.set(selectedIndex, newName);
+	}
 }
