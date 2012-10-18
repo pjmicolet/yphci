@@ -9,7 +9,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.security.MessageDigest;
 
 import javax.imageio.ImageIO;
 import javax.swing.Box;
@@ -26,13 +33,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.undo.UndoManager;
 
 import com.utils.ImageLabels;
 
 public class MainFrame extends JFrame{
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private JPanel appPanel = new JPanel();
 	private JPanel toolPanel = new JPanel();
 	private JPanel labelTools = new JPanel();
@@ -40,16 +48,16 @@ public class MainFrame extends JFrame{
 	private JPanel imageTool = new JPanel();
 
 	private JLabel imageLabel = new JLabel();
-	
+
 	private JButton newLabel = new JButton("New Label");
 	private JButton editLabel = new JButton("Edit Label");
 	private JButton deleteLabel = new JButton("Delete Label");
-	
+
 	private JMenuBar menuBar = new JMenuBar();
 
 	private JMenu file = new JMenu("File");
 	private JMenu edit = new JMenu("Edit");
-	
+
 	private JMenuItem newImage = new JMenuItem("New Image");
 	private JMenuItem loadLabel = new JMenuItem("Load Label");
 	private JMenuItem saveLabel = new JMenuItem("Save Label");
@@ -57,14 +65,16 @@ public class MainFrame extends JFrame{
 	private JMenuItem redoLabel = new JMenuItem("Redo");
 
 	private MainPanel imageLabeler = new MainPanel();
-	
+
 	private ImageLabels labels;
-	
+
 	private LabelList labelList;
-	
+
 	private String imageFilename;
-	
+
 	private BufferedImage image;
+	
+	private ImageIcon imageIcon;
 
 	/**
 	 * Runs the program
@@ -80,8 +90,8 @@ public class MainFrame extends JFrame{
 			e.printStackTrace();
 		}
 	}
-	
-	
+
+
 	//TODO: Make this pretty.
 	/**
 	 * sets up application window
@@ -100,25 +110,25 @@ public class MainFrame extends JFrame{
 		  	public void windowActivated(WindowEvent event){
 		  	}
 		});
-		
+
 		//Get the image and scale it.
 		getImage();
-		
+
 		labelList = new LabelList(this.labels);
 
 		menuBar.add(file);
 		menuBar.add(edit);
-		
+
 		file.add(newImage);
 		file.add(loadLabel);
 		file.add(saveLabel);
-		
+
 		edit.add(undoLabel);
 		edit.add(redoLabel);
-		
+
 		imagePanel.add(imageLabel);
 		imagePanel.setOpaque(true);	
-		
+
 		/*
 		 * We add all the buttons to the toolPanel
 		 */
@@ -130,14 +140,14 @@ public class MainFrame extends JFrame{
 		toolPanel.add(deleteLabel);
 		toolPanel.add(Box.createGlue());
 		toolPanel.add(labelList);
-		
+
 		/*
 		 * This is is the panel that contains the list of labels and the buttons.
 		 */
 		labelTools.setLayout(new BoxLayout(labelTools, BoxLayout.Y_AXIS));
 		labelTools.add(toolPanel);
 		labelTools.add(labelList);
-		
+
 		//setup main window panel
 		appPanel = new JPanel();
 		this.setLayout(new BoxLayout(appPanel, BoxLayout.X_AXIS));
@@ -151,34 +161,33 @@ public class MainFrame extends JFrame{
 
 		imageTool.add(imageLabeler, BorderLayout.CENTER);
 		imageTool.add(imagePanel, BorderLayout.CENTER);
-		
+
 		appPanel.add(labelTools);
 		appPanel.add(imageTool);
 		this.setJMenuBar(menuBar);
 
 		//display all the stuff
 		this.pack();	
-	
+
 		ListSelectionListener selectionListener = new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent listEvent) {
 		        JList theList = (JList) listEvent.getSource();
 		          	int index = theList.getSelectedIndex();
-		          	System.out.printf("clicked on index %d, label: %s\n", index, labels.getPoints().get(index).getLabel());
 		        	if (index >= 0) {
 		            labelList.setIsSelected(true);
 		            labelList.setSelectedIndex(index);
 		            imageLabeler.repaint();
 		        }				
-				
+
 			}
-			
+
 		};
 		this.labelList.getJList().addListSelectionListener(selectionListener);
-	
+
 
 		newLabel.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
@@ -195,9 +204,9 @@ public class MainFrame extends JFrame{
 				}
 			}
 		});
-		
+
 		editLabel.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (labelList.getIsSelected()) {
@@ -220,9 +229,20 @@ public class MainFrame extends JFrame{
 				}
 			}
 		});
+
+		loadLabel.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				System.out.println("Wololo");
+				loadLabels();
+				imageTool.repaint();
+			}
+		});
 		
 		deleteLabel.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (labelList.getIsSelected()){
@@ -232,13 +252,13 @@ public class MainFrame extends JFrame{
 					labels.removeLabel(index);
 					labelList.setIsSelected(false);
 				}
-				
+
 				imageTool.repaint();
 			}
 		});
-		
+
 		newImage.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
@@ -250,6 +270,30 @@ public class MainFrame extends JFrame{
 				}
 			}
 		});
+		
+		saveLabel.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				try {
+					saveLabels();
+				}
+				catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+		});
+		
+		undoLabel.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				UndoManager undo = new UndoManager();
+				undo.undo();
+			}
+		});
 	}
 
 
@@ -259,14 +303,14 @@ public class MainFrame extends JFrame{
 		super.paint(g);
 		imageTool.paint(imageTool.getGraphics());
 	}
-	
+
 	/**
 	 * Finishes the current label.
 	 */
 	public void finishLabel(){
 		imageLabeler.finishLabel(true);
 	}
-	
+
 	/**
 	 * Starts a FileChooser window to choose a new image and then sets that image as the
 	 * current JLabel.
@@ -274,15 +318,19 @@ public class MainFrame extends JFrame{
 	 */
 	public void loadNewImage() throws Exception{
 		FileChooser fc = new FileChooser();
-		labels = new ImageLabels();
 		this.imageFilename = fc.getPath();
-
-		ImageIcon icon = new ImageIcon(imageFilename);
-		imageLabel.setIcon(icon);
-		imageLabeler.resetLabels();
+		imageIcon = new ImageIcon(imageFilename);
+		Image img = imageIcon.getImage();
+		img = img.getScaledInstance(800, 600,  java.awt.Image.SCALE_SMOOTH);
+		imageIcon.setImage(img);
+     	imageLabel.setIcon(imageIcon);
+		resetLabels();
+		loadLabels();
 		imageTool.repaint();
+		
+		
 	}
-	
+
 	/**
 	 * Uses the image path to set the image, rescale it and put it in a JLabel.
 	 * @throws Exception
@@ -290,7 +338,7 @@ public class MainFrame extends JFrame{
 	public void getImage() throws Exception{
 
 		this.image = ImageIO.read(new File(imageFilename));
-	
+
 		if (image.getWidth() > 800 || image.getHeight() > 600) {
 			int newWidth = image.getWidth() > 800 ? 800 : (image.getWidth() * 600)/image.getHeight();
 			int newHeight = image.getHeight() > 600 ? 600 : (image.getHeight() * 800)/image.getWidth();
@@ -301,5 +349,110 @@ public class MainFrame extends JFrame{
 		}
 		this.imageLabel = new JLabel(new ImageIcon( this.image ));
 	}
+	
+	/**
+	 * Resets the current labels and deletes all elements within the labelList
+	 * @throws Exception
+	 */
+	public void resetLabels() throws Exception{
+		this.labels = new ImageLabels();
+		imageLabeler.setLabels(labels);
+		this.labelList.deleteAllElements();
+		imageLabeler.setLabelsList(labelList);
+	}
+	
+	/**
+	 * Saves a label using serialization magic.
+	 * TODO: Get it so that we don't always save under file called labels.
+	 */
+	public void saveLabels(){
+		try {
+			File input = new File(this.imageFilename);
+	        
+	        BufferedImage buffImg = ImageIO.read(input);
+	        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+	        ImageIO.write(buffImg, "png", outputStream);
+	        byte[] data = outputStream.toByteArray();
 
+	        System.out.println("Start MD5 Digest");
+	        MessageDigest md = MessageDigest.getInstance("MD5");
+	        md.update(data);
+	        byte[] hash = md.digest();
+	        System.out.println(returnHex(hash));
+	        
+			FileOutputStream fos = new FileOutputStream(returnHex(hash));
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			oos.writeObject(labels);
+			oos.flush();
+			oos.close();
+			System.out.println("Labels file saved");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	static String returnHex(byte[] inBytes) throws Exception {
+        String hexString = null;
+        for (int i=0; i < inBytes.length; i++) { //for loop ID:1
+            hexString +=
+            Integer.toString( ( inBytes[i] & 0xff ) + 0x100, 16).substring( 1 );
+        }                                   // Belongs to for loop ID:1
+    return hexString;
+  }                                         // Belongs to returnHex class
+	/**
+	 * Loads the labels and makes sure everything is nice and clean...ish
+	 */
+	public void loadLabels(){
+		try{
+			File input = new File(this.imageFilename);
+	        
+	        BufferedImage buffImg = ImageIO.read(input);
+	        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+	        ImageIO.write(buffImg, "png", outputStream);
+	        byte[] data = outputStream.toByteArray();
+
+	        System.out.println("Start MD5 Digest");
+	        MessageDigest md = MessageDigest.getInstance("MD5");
+	        md.update(data);
+	        byte[] hash = md.digest();
+
+	        System.out.println("Hash: " + returnHex(hash));
+	        FileInputStream fis;
+	        try {
+	        	fis = new FileInputStream(returnHex(hash));
+	        	int answer = JOptionPane.showConfirmDialog(null, 
+						"We have detected a labels file for this image. Do you want to load it?", "Warning", JOptionPane.YES_NO_OPTION);
+			    if (answer == JOptionPane.YES_OPTION) {
+			    	ObjectInputStream ois = new ObjectInputStream(fis);
+					labels = (ImageLabels) ois.readObject();
+					ois.close();
+			    }
+			    else {
+			    	FileChooser fc = new FileChooser();
+					this.imageFilename = fc.getPath();
+		        	try {
+		        		fis = new FileInputStream(returnHex(hash));
+		        		ObjectInputStream ois = new ObjectInputStream(fis);
+						labels = (ImageLabels) ois.readObject();
+						ois.close();
+					}
+		        	catch (Exception e1) {
+		        		System.out.println("There was a problem loading your labels file. Creating a new one.." );
+		        	}
+			    }
+	        }
+	        catch (FileNotFoundException e) {
+        		System.out.println("Creating a new labels file .." );
+			}
+
+			imageLabeler.setLabels(labels);
+			labelList.deleteAllElements();
+			labelList.addAllElements(labels);
+			imageLabeler.setLabelsList(labelList);
+			System.out.println("File loaded");
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+	}
 }

@@ -28,6 +28,8 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 	private int dragIndex;
 	private LabelList labelsList;
 	private Dimension panelSize = new Dimension(800,600);
+	private int imgWidth;
+	private int imgHeight; 
 
 	public MainPanel() {
 		addMouseListener(this);
@@ -48,6 +50,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 		setMaximumSize(panelSize);
 		this.labels = labels;
 		this.labelsList = labelsList;
+		
 	}
 
 	@Override
@@ -131,7 +134,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 				    	labelName = "";
 				    }
 				}
-				
+
 				else if (!labelName.isEmpty()) {
 					label.setLabel(labelName);
 					complete = true;
@@ -140,17 +143,17 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 					labelName = JOptionPane.showInputDialog(null,
 					"Please enter object's label: ", "HCI FTW", 1);
 				}
-				
+
 			}
 		}
 		labels.closeCurrentLabel();
 		labelsList.addElement(label.getLabel());
 	}
-	
+
 	public void resetLabels(){
 		labels = new ImageLabels();
 	}
-	
+
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		int x = e.getX();
@@ -164,7 +167,6 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 		Graphics2D g = (Graphics2D)this.getGraphics();
 		//Graphics g = this.getGraphics();
 		PointsLabelPair currentLabel = labels.getCurrentLabel();
-		System.out.println("curr label: " + currentLabel.getLabel());
 		g.setColor(Color.PINK);
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			if (currentLabel.size() != 0) {
@@ -230,6 +232,10 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 			int x = e.getX();
 			int y = e.getY();
 
+			if (x > panelSize.getWidth() || y > panelSize.getHeight() 
+					|| y < 2 || x < 2 ) {
+				return;
+			}
 			Point clickedPoint = new Point(x, y);
 			//System.out.println("x: " + x + " y: " + y);
 			currentLabel.getPoints().set(dragIndex, clickedPoint);
@@ -238,4 +244,13 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 			repaint();
 		}
 	}
+	
+	public void setLabels(ImageLabels labels){
+		this.labels = labels;
+	}
+	
+	public void setLabelsList(LabelList labelList){
+		this.labelsList = labelList;
+	}
+	
 }

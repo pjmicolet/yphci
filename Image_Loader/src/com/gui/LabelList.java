@@ -12,7 +12,6 @@ public class LabelList extends JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private ImageLabels labels = new ImageLabels();
 	private JList labelList;
 	private DefaultListModel listModel;
 	private boolean isSelected = false;
@@ -21,7 +20,6 @@ public class LabelList extends JPanel {
 
 	public LabelList(ImageLabels imgLabels) {
 		this.listModel = new DefaultListModel();
-		this.labels = imgLabels;
 		this.labelList = new JList(this.listModel);
 
 		labelList.setCellRenderer(new LabelCellRenderer());
@@ -36,8 +34,20 @@ public class LabelList extends JPanel {
 		System.out.println("Size: " + listModel.size());
 	}
 	
+	public void addAllElements(ImageLabels labels){
+		for(int i = 0; i < labels.size(); i++){
+			listModel.addElement(labels.getPoints().get(i).getLabel());
+		}
+	}
+	
 	public void deleteElement(int index){
 		listModel.remove(index);
+	}
+	
+	public void deleteAllElements(){
+		for(int i =0; i < listModel.size(); i++){
+			listModel.remove(i);
+		}
 	}
 
 	public boolean getIsSelected() {
