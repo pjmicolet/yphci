@@ -17,6 +17,7 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.security.MessageDigest;
+import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.Box;
@@ -40,6 +41,7 @@ import com.utils.ImageLabels;
 public class MainFrame extends JFrame{
 
 	private static final long serialVersionUID = 1L;
+	private static final String mappingsPathname = "./labels/mappings";
 
 	private JPanel appPanel = new JPanel();
 	private JPanel toolPanel = new JPanel();
@@ -61,6 +63,7 @@ public class MainFrame extends JFrame{
 	private JMenuItem newImage = new JMenuItem("New Image");
 	private JMenuItem loadLabel = new JMenuItem("Load Label");
 	private JMenuItem saveLabel = new JMenuItem("Save Label");
+	private JMenuItem saveAsLabel = new JMenuItem("Save As Label");
 	private JMenuItem undoLabel = new JMenuItem("Undo");
 	private JMenuItem redoLabel = new JMenuItem("Redo");
 
@@ -75,6 +78,12 @@ public class MainFrame extends JFrame{
 	private BufferedImage image;
 	
 	private ImageIcon imageIcon;
+	
+	private HashMap<String, String> mappings = new HashMap<String, String>();
+	
+	private boolean saveAs = false;
+	
+	private String currentPath;
 
 	/**
 	 * Runs the program
@@ -122,6 +131,7 @@ public class MainFrame extends JFrame{
 		file.add(newImage);
 		file.add(loadLabel);
 		file.add(saveLabel);
+		file.add(saveAsLabel);
 
 		edit.add(undoLabel);
 		edit.add(redoLabel);
@@ -277,11 +287,29 @@ public class MainFrame extends JFrame{
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
 				try {
-					saveLabels();
+					saveLabels(false);
 				}
 				catch(Exception e){
 					e.printStackTrace();
 				}
+			}
+		});
+		
+		saveAsLabel.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				try {
+					saveAsLabels();
+				}
+				catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+
+			private void saveAsLabels() {
+				saveLabels(true);
 			}
 		});
 		
@@ -365,8 +393,25 @@ public class MainFrame extends JFrame{
 	 * Saves a label using serialization magic.
 	 * TODO: Get it so that we don't always save under file called labels.
 	 */
-	public void saveLabels(){
+	public void saveLabels(boolean saveAs){
 		try {
+			FileInputStream map;
+			try {
+				System.out.println(mappingsPathname);
+				map = new FileInputStream(mappingsPathname);
+				ObjectInputStream mapOis = new ObjectInputStream(map);
+				mappings = (HashMap<String, String>) mapOis.readObject();
+				map.close();
+			}
+			catch (FileNotFoundException exc) {
+				createNewMappings();
+				map = new FileInputStream(mappingsPathname);
+				ObjectInputStream mapOis = new ObjectInputStream(map);
+				mappings = (HashMap<String, String>) mapOis.readObject();
+				map.close();
+			}
+			
+			
 			File input = new File(this.imageFilename);
 	        
 	        BufferedImage buffImg = ImageIO.read(input);
@@ -380,6 +425,24 @@ public class MainFrame extends JFrame{
 	        byte[] hash = md.digest();
 	        System.out.println(returnHex(hash));
 	        
+	        String hashString = returnHex(hash);
+	        String labelsPathname;
+	        
+	        if (saveAs || !mappings.containsKey(hashString) ) {
+	        	FileChooser fc = new FileChooser();
+				labelsPathname = fc.getPath();
+			}
+	        else {
+	        	labelsPathname = this.currentPath;
+	        }
+	        mappings.put(hashString, labelsPathname);
+//	        if (mappings.containsKey(hashString)) {
+//		        mappings.  labelsPathname = mappings.get(hashString);
+//	        }
+//	        else {
+//	        	labelsPathname = "";
+//	        }
+//	        
 			FileOutputStream fos = new FileOutputStream(returnHex(hash));
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			oos.writeObject(labels);
@@ -404,6 +467,20 @@ public class MainFrame extends JFrame{
 	 */
 	public void loadLabels(){
 		try{
+			FileInputStream map;
+			try {
+				map = new FileInputStream(mappingsPathname);
+				ObjectInputStream mapOis = new ObjectInputStream(map);
+				mappings = (HashMap<String, String>) mapOis.readObject();
+			}
+			catch (FileNotFoundException exc) {
+				createNewMappings();
+				map = new FileInputStream(mappingsPathname);
+				ObjectInputStream mapOis = new ObjectInputStream(map);
+				mappings = (HashMap<String, String>) mapOis.readObject();
+			}
+			
+			
 			File input = new File(this.imageFilename);
 	        
 	        BufferedImage buffImg = ImageIO.read(input);
@@ -416,10 +493,18 @@ public class MainFrame extends JFrame{
 	        md.update(data);
 	        byte[] hash = md.digest();
 
-	        System.out.println("Hash: " + returnHex(hash));
+	        String hashString = returnHex(hash);
+	        String labelsPathname;
+	        if (mappings.containsKey(hashString)) {
+		        labelsPathname = mappings.get(hashString);
+	        }
+	        else {
+	        	labelsPathname = "";
+	        }
+ 
 	        FileInputStream fis;
 	        try {
-	        	fis = new FileInputStream(returnHex(hash));
+	        	fis = new FileInputStream(labelsPathname);
 	        	int answer = JOptionPane.showConfirmDialog(null, 
 						"We have detected a labels file for this image. Do you want to load it?", "Warning", JOptionPane.YES_NO_OPTION);
 			    if (answer == JOptionPane.YES_OPTION) {
@@ -429,21 +514,24 @@ public class MainFrame extends JFrame{
 			    }
 			    else {
 			    	FileChooser fc = new FileChooser();
-					this.imageFilename = fc.getPath();
+					labelsPathname = fc.getPath();
 		        	try {
-		        		fis = new FileInputStream(returnHex(hash));
+		        		fis = new FileInputStream(labelsPathname);
 		        		ObjectInputStream ois = new ObjectInputStream(fis);
 						labels = (ImageLabels) ois.readObject();
 						ois.close();
-					}
-		        	catch (Exception e1) {
+					} // TEST FOR WRONG LABEL FILES
+		        	catch (FileNotFoundException e1) {
 		        		System.out.println("There was a problem loading your labels file. Creating a new one.." );
 		        	}
 			    }
 	        }
 	        catch (FileNotFoundException e) {
         		System.out.println("Creating a new labels file .." );
+        		labels = new ImageLabels();
 			}
+	        
+	        this.currentPath = labelsPathname;
 
 			imageLabeler.setLabels(labels);
 			labelList.deleteAllElements();
@@ -453,6 +541,20 @@ public class MainFrame extends JFrame{
 		}
 		catch (Exception e){
 			e.printStackTrace();
+		}
+	}
+
+
+	private void createNewMappings() {
+		try {
+			FileOutputStream map = new FileOutputStream(mappingsPathname);
+			ObjectOutputStream mapOis = new ObjectOutputStream(map);
+			mapOis.writeObject(mappings);
+			mapOis.flush();
+			mapOis.close();
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
 		}
 	}
 }
