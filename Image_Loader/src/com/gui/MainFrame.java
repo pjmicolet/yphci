@@ -85,6 +85,9 @@ public class MainFrame extends JFrame{
 	
 	private String currentPath;
 
+	private Boolean needToSave = false;
+	
+	
 	/**
 	 * Runs the program
 	 * @param argv path to an image
@@ -165,7 +168,7 @@ public class MainFrame extends JFrame{
        
 		//Create and set up the image panel.
 
-		imageLabeler = new MainPanel(labels, labelList);
+		imageLabeler = new MainPanel(labels, labelList, needToSave);
 		imageLabeler.setOpaque(false); //content panes must be opaque
 		imageTool.setLayout(new BorderLayout());
 
@@ -212,7 +215,10 @@ public class MainFrame extends JFrame{
 				else {
 					finishLabel();
 				}
+
+				needToSave = true;
 			}
+
 		});
 
 		editLabel.addActionListener(new ActionListener() {
@@ -237,6 +243,8 @@ public class MainFrame extends JFrame{
 				else {
 					finishLabel();
 				}
+
+				needToSave = true;
 			}
 		});
 
@@ -261,6 +269,8 @@ public class MainFrame extends JFrame{
 					labelList.deleteElement(index);
 					labels.removeLabel(index);
 					labelList.setIsSelected(false);
+
+					needToSave = true;
 				}
 
 				imageTool.repaint();
@@ -301,15 +311,12 @@ public class MainFrame extends JFrame{
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
 				try {
-					saveAsLabels();
+					saveLabels(true);
+					needToSave = false;
 				}
 				catch(Exception e){
 					e.printStackTrace();
 				}
-			}
-
-			private void saveAsLabels() {
-				saveLabels(true);
 			}
 		});
 		
@@ -345,14 +352,41 @@ public class MainFrame extends JFrame{
 	 * @throws Exception
 	 */
 	public void loadNewImage() throws Exception{
+		
+		if(needToSave){
+			int answer = JOptionPane.showConfirmDialog(null, 
+					"Do you want to save your labels first?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION);
+			if(answer == JOptionPane.YES_OPTION){
+				//Call save
+				try{
+					saveLabels(false);
+				}
+				catch (Exception e) {
+					// TODO: handle exception
+				}
+			}
+			else if (answer == JOptionPane.CANCEL_OPTION){
+				//Don't do anything
+				return;
+			}
+		}
+		
 		FileChooser fc = new FileChooser();
-		this.imageFilename = fc.getPath();
+		String path = fc.getPath();
+		
+		/*
+		 * this is to check if we've cancelled getting a new image.
+		 */
+		if(path.isEmpty()){
+			return;
+		}
+		this.imageFilename = path;
 		imageIcon = new ImageIcon(imageFilename);
 		Image img = imageIcon.getImage();
 		img = img.getScaledInstance(800, 600,  java.awt.Image.SCALE_SMOOTH);
 		imageIcon.setImage(img);
      	imageLabel.setIcon(imageIcon);
-		resetLabels();
+     	resetLabels();
 		loadLabels();
 		imageTool.repaint();
 		
@@ -366,7 +400,6 @@ public class MainFrame extends JFrame{
 	public void getImage() throws Exception{
 
 		this.image = ImageIO.read(new File(imageFilename));
-
 		if (image.getWidth() > 800 || image.getHeight() > 600) {
 			int newWidth = image.getWidth() > 800 ? 800 : (image.getWidth() * 600)/image.getHeight();
 			int newHeight = image.getHeight() > 600 ? 600 : (image.getHeight() * 800)/image.getWidth();
@@ -375,6 +408,8 @@ public class MainFrame extends JFrame{
 			image = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
 			image.getGraphics().drawImage(scaledImage, 0, 0, this);
 		}
+		
+		
 		this.imageLabel = new JLabel(new ImageIcon( this.image ));
 	}
 	
@@ -392,6 +427,7 @@ public class MainFrame extends JFrame{
 	/**
 	 * Saves a label using serialization magic.
 	 * TODO: Get it so that we don't always save under file called labels.
+	 * TODO: Change button to Save, instead of Open
 	 */
 	public void saveLabels(boolean saveAs){
 		try {
@@ -527,6 +563,7 @@ public class MainFrame extends JFrame{
 			    else {
 			    	FileChooser fc = new FileChooser();
 					labelsPathname = fc.getPath();
+					this.imageFilename = fc.getPath();
 		        	try {
 		        		fis = new FileInputStream(labelsPathname);
 		        		ObjectInputStream ois = new ObjectInputStream(fis);

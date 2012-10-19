@@ -24,7 +24,7 @@ public class FileChooser extends JPanel implements ActionListener{
     private File file;
     private String path;
     private boolean done = false;
- 
+    
     public FileChooser() {
         super(new BorderLayout());
  
@@ -42,11 +42,13 @@ public class FileChooser extends JPanel implements ActionListener{
         if (returnVal == JFileChooser.APPROVE_OPTION) {
            file = fc.getSelectedFile();
            path = file.getAbsolutePath();
-           done = true;
-            //This is where a real application would open the file.
+           //This is where a real application would open the file.
             log.append("Opening: " + file.getName() + "." + newline);
         } else {
-            log.append("Open command cancelled by user." + newline);
+        	//If we cancel just set the path to be empty.
+        	path = "";
+        	System.out.println("YOLO");
+        	log.append("Open command cancelled by user." + newline);
         }
         log.setCaretPosition(log.getDocument().getLength());
     }
