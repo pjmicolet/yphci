@@ -29,7 +29,8 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 	private LabelList labelsList;
 	private Dimension panelSize = new Dimension(800,600);
 	private int imgWidth;
-	private int imgHeight; 
+	private int imgHeight;
+	private Boolean needToSave;
 
 	public MainPanel() {
 		addMouseListener(this);
@@ -41,7 +42,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 	 * @param imageName - path to image
 	 * @throws Exception if error loading the image
 	 */
-	public MainPanel(ImageLabels labels, LabelList labelsList) throws Exception{
+	public MainPanel(ImageLabels labels, LabelList labelsList, Boolean needToSave) throws Exception{
 		this();
 
 		setSize(panelSize);
@@ -50,7 +51,8 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 		setMaximumSize(panelSize);
 		this.labels = labels;
 		this.labelsList = labelsList;
-		
+		this.needToSave = needToSave;
+	
 	}
 
 	@Override
@@ -95,7 +97,6 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 		if (label.size() >= 3) {
 			Point firstPoint = label.get(0);
 			Point lastPoint = label.get(label.size() - 1);
-
 			g2.setColor(Color.PINK);
 			g2.drawLine(firstPoint.getX(), firstPoint.getY(), lastPoint.getX(), lastPoint.getY());
 		}
@@ -111,7 +112,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 			Point firstPoint = label.get(0);
 			Point lastPoint = label.get(label.size() - 1);
 
-			Graphics2D g = (Graphics2D)this.getGraphics();
+			Graphics2D g = (Graphics2D)this.getGraphics();		
 			g.setColor(Color.PINK);
 			g.drawLine(firstPoint.getX(), firstPoint.getY(), lastPoint.getX(), lastPoint.getY());
 		}
@@ -165,7 +166,6 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 		}
 
 		Graphics2D g = (Graphics2D)this.getGraphics();
-		//Graphics g = this.getGraphics();
 		PointsLabelPair currentLabel = labels.getCurrentLabel();
 		g.setColor(Color.PINK);
 		if (e.getButton() == MouseEvent.BUTTON1) {
@@ -184,7 +184,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 			currentLabel.addPoint(x, y);
 			labels.updateCurrentLabel(currentLabel);
 		}
-
+		needToSave = true;
 	}
 
 	@Override
@@ -252,5 +252,6 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 	public void setLabelsList(LabelList labelList){
 		this.labelsList = labelList;
 	}
+	
 	
 }
