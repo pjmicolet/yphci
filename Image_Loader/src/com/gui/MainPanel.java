@@ -28,9 +28,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 	private int dragIndex;
 	private LabelList labelsList;
 	private Dimension panelSize = new Dimension(800,600);
-	private int imgWidth;
-	private int imgHeight;
-	private Boolean needToSave;
+	private boolean needToSave;
 
 	public MainPanel() {
 		addMouseListener(this);
@@ -42,7 +40,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 	 * @param imageName - path to image
 	 * @throws Exception if error loading the image
 	 */
-	public MainPanel(ImageLabels labels, LabelList labelsList, Boolean needToSave) throws Exception{
+	public MainPanel(ImageLabels labels, LabelList labelsList, boolean needToSave) throws Exception{
 		this();
 
 		setSize(panelSize);
@@ -100,7 +98,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 			g2.setColor(Color.PINK);
 			g2.drawLine(firstPoint.getX(), firstPoint.getY(), lastPoint.getX(), lastPoint.getY());
 		}
-
+		this.needToSave = true;
 	}
 
 	// Nicer finishLabel function, makes it easier to call outside of the MainPanel class.
@@ -149,10 +147,13 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 		}
 		labels.closeCurrentLabel();
 		labelsList.addElement(label.getLabel());
+		
+		this.needToSave = true;
 	}
 
 	public void resetLabels(){
 		labels = new ImageLabels();
+		this.needToSave = true;
 	}
 
 	@Override
@@ -184,7 +185,6 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 			currentLabel.addPoint(x, y);
 			labels.updateCurrentLabel(currentLabel);
 		}
-		needToSave = true;
 	}
 
 	@Override
@@ -201,6 +201,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		dragging = false;
+		this.needToSave = true;
 	}
 
 
@@ -224,6 +225,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 					return;
 				}
 			}
+		this.needToSave = true;
 	}
 
 	@Override
@@ -243,6 +245,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 			labels.closeCurrentLabel();
 			repaint();
 		}
+		this.needToSave = true;
 	}
 	
 	public void setLabels(ImageLabels labels){
@@ -253,5 +256,12 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 		this.labelsList = labelList;
 	}
 	
+	public boolean getNeedToSave(){
+		return this.needToSave;
+	}
+	
+	public void setNeedToSave(boolean bool){
+		this.needToSave = bool;
+	}
 	
 }

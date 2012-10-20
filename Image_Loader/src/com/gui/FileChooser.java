@@ -27,7 +27,7 @@ public class FileChooser extends JPanel implements ActionListener{
     
     public FileChooser() {
         super(new BorderLayout());
- 
+
         //Create the log first, because the action listeners
         //need to refer to it.
         log = new JTextArea(5,20);

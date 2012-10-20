@@ -81,11 +81,9 @@ public class MainFrame extends JFrame{
 	
 	private HashMap<String, String> mappings = new HashMap<String, String>();
 	
-	private boolean saveAs = false;
-	
-	private String currentPath;
+	private String currentPath = "";
 
-	private Boolean needToSave = false;
+	private boolean needToSave = false;
 	
 	
 	/**
@@ -111,18 +109,6 @@ public class MainFrame extends JFrame{
 	 * @throws Exception
 	 */
 	public void setupGUI(String imageFilename) throws Exception {
-		this.addWindowListener(new WindowAdapter() {
-		  	public void windowClosing(WindowEvent event) {
-		  		//here we exit the program (maybe we should ask if the user really wants to do it?)
-		  		//maybe we also want to store the polygons somewhere? and read them next time
-		  		System.out.println("Exiting...");
-		    	System.exit(0);
-		  	}
-
-		  	public void windowActivated(WindowEvent event){
-		  	}
-		});
-
 		//Get the image and scale it.
 		getImage();
 
@@ -168,7 +154,7 @@ public class MainFrame extends JFrame{
        
 		//Create and set up the image panel.
 
-		imageLabeler = new MainPanel(labels, labelList, needToSave);
+		imageLabeler = new MainPanel(labels, labelList, this.needToSave);
 		imageLabeler.setOpaque(false); //content panes must be opaque
 		imageTool.setLayout(new BorderLayout());
 
@@ -329,6 +315,31 @@ public class MainFrame extends JFrame{
 				undo.undo();
 			}
 		});
+		
+		this.addWindowListener(new WindowAdapter() {
+		  	public void windowClosing(WindowEvent event) {
+		  		//here we exit the program (maybe we should ask if the user really wants to do it?)
+		  		//maybe we also want to store the polygons somewhere? and read them next time
+		  		if(needToSave || imageLabeler.getNeedToSave()){
+		  			int answer = JOptionPane.showConfirmDialog(null, 
+							"Do you want to save your labels first?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION);
+					if(answer == JOptionPane.YES_OPTION){
+						//Call save
+						try{
+							saveLabels(false);
+						}
+						catch (Exception e) {
+							// TODO: handle exception
+						}
+					}
+		  		}
+		  		System.out.println("Exiting...");
+		    	System.exit(0);
+		  	}
+
+		  	public void windowActivated(WindowEvent event){
+		  	}
+		});
 	}
 
 
@@ -353,7 +364,7 @@ public class MainFrame extends JFrame{
 	 */
 	public void loadNewImage() throws Exception{
 		
-		if(needToSave){
+		if(needToSave || imageLabeler.getNeedToSave()){
 			int answer = JOptionPane.showConfirmDialog(null, 
 					"Do you want to save your labels first?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION);
 			if(answer == JOptionPane.YES_OPTION){
@@ -389,7 +400,8 @@ public class MainFrame extends JFrame{
      	resetLabels();
 		loadLabels();
 		imageTool.repaint();
-		
+		needToSave = false;
+		imageLabeler.setNeedToSave(false);
 		
 	}
 
@@ -477,13 +489,7 @@ public class MainFrame extends JFrame{
 	        }
 	        mappings.put(hashString, labelsPathname);
 	        System.out.println(mappings.keySet());
-//	        if (mappings.containsKey(hashString)) {
-//		        mappings.  labelsPathname = mappings.get(hashString);
-//	        }
-//	        else {
-//	        	labelsPathname = "";
-//	        }
-//	        
+	        
 			FileOutputStream labelsFos = new FileOutputStream(labelsPathname);
 			ObjectOutputStream labelsOos = new ObjectOutputStream(labelsFos);
 			labelsOos.writeObject(labels);
