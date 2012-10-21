@@ -50,6 +50,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 		this.labels = labels;
 		this.labelsList = labelsList;
 		this.needToSave = needToSave;
+
 	
 	}
 

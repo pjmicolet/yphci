@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.security.MessageDigest;
@@ -42,18 +43,23 @@ public class MainFrame extends JFrame{
 
 	private static final long serialVersionUID = 1L;
 	private static final String mappingsPathname = "./labels/mappings";
+	
+	private String currentImagePath = "./";
 
 	private JPanel appPanel = new JPanel();
 	private JPanel toolPanel = new JPanel();
 	private JPanel labelTools = new JPanel();
 	private JPanel imagePanel = new JPanel();
 	private JPanel imageTool = new JPanel();
+	private JPanel nextBackImage = new JPanel();
 
 	private JLabel imageLabel = new JLabel();
 
 	private JButton newLabel = new JButton("New Label");
 	private JButton editLabel = new JButton("Edit Label");
 	private JButton deleteLabel = new JButton("Delete Label");
+	private JButton nextImages = new JButton("Next Images");
+	private JButton previousImages = new JButton("Previous Images");
 
 	private JMenuBar menuBar = new JMenuBar();
 
@@ -70,6 +76,8 @@ public class MainFrame extends JFrame{
 	private MainPanel imageLabeler = new MainPanel();
 
 	private ImageLabels labels;
+	
+	private ImageList imageNav;
 
 	private LabelList labelList;
 
@@ -113,6 +121,9 @@ public class MainFrame extends JFrame{
 		getImage();
 
 		labelList = new LabelList(this.labels);
+		
+
+		imageNav = new ImageList(currentImagePath);
 
 		menuBar.add(file);
 		menuBar.add(edit);
@@ -139,13 +150,21 @@ public class MainFrame extends JFrame{
 		toolPanel.add(deleteLabel);
 		toolPanel.add(Box.createGlue());
 		toolPanel.add(labelList);
+		
+		nextBackImage.setLayout(new GridLayout(0,2));
+		nextBackImage.add(previousImages);
+		nextBackImage.add(nextImages);
 
+		
 		/*
 		 * This is is the panel that contains the list of labels and the buttons.
 		 */
 		labelTools.setLayout(new BoxLayout(labelTools, BoxLayout.Y_AXIS));
 		labelTools.add(toolPanel);
 		labelTools.add(labelList);
+		labelTools.add(imageNav);
+		labelTools.add(nextBackImage);
+		
 
 		//setup main window panel
 		appPanel = new JPanel();
@@ -184,6 +203,28 @@ public class MainFrame extends JFrame{
 		};
 		this.labelList.getJList().addListSelectionListener(selectionListener);
 
+		ListSelectionListener imageSelection = new ListSelectionListener() {
+			
+			@Override
+			public void valueChanged(ListSelectionEvent listEvent) {
+				JList theList = (JList) listEvent.getSource();
+				int index = theList.getSelectedIndex();
+				if(index >= 0){
+					String[] paths = imageNav.getPaths();
+					try {
+						/*
+						 * This is a quick load so set quickLoad to true and feed it the path.
+						 */
+						loadNewImage(true, paths[index]);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		};
+		
+		this.imageNav.getJList().addListSelectionListener(imageSelection);
 
 		newLabel.addActionListener(new ActionListener() {
 
@@ -262,14 +303,35 @@ public class MainFrame extends JFrame{
 				imageTool.repaint();
 			}
 		});
+		
+		nextImages.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				imageNav.nextImages();
+				imageTool.repaint();
+			}
+		});
 
+		previousImages.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+		
+					imageNav.previousImages();
+					imageTool.repaint();
+				
+			}
+		});
+		
 		newImage.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
 				try {
-					loadNewImage();
+					//Tell load new image this isn't a quick load and give it an empty string as getting the path will be done later.
+					loadNewImage(false, "");
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -362,7 +424,7 @@ public class MainFrame extends JFrame{
 	 * current JLabel.
 	 * @throws Exception
 	 */
-	public void loadNewImage() throws Exception{
+	public void loadNewImage(boolean quickLoad, String givenPath) throws Exception{
 		
 		if(needToSave || imageLabeler.getNeedToSave()){
 			int answer = JOptionPane.showConfirmDialog(null, 
@@ -382,9 +444,18 @@ public class MainFrame extends JFrame{
 			}
 		}
 		
-		FileChooser fc = new FileChooser();
-		String path = fc.getPath();
+		String path;
 		
+		if(!quickLoad){
+			FileChooser fc = new FileChooser();
+			path = fc.getPath();
+
+			imageNav.clearAllElements();
+			imageNav.resetPath(fc.returnDirectory());
+		}
+		else{
+			path = givenPath;
+		}
 		/*
 		 * this is to check if we've cancelled getting a new image.
 		 */
@@ -404,6 +475,7 @@ public class MainFrame extends JFrame{
 		imageLabeler.setNeedToSave(false);
 		
 	}
+	
 
 	/**
 	 * Uses the image path to set the image, rescale it and put it in a JLabel.

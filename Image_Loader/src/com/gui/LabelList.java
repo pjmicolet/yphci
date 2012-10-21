@@ -45,9 +45,7 @@ public class LabelList extends JPanel {
 	}
 	
 	public void deleteAllElements(){
-		for(int i =0; i < listModel.size(); i++){
-			listModel.remove(i);
-		}
+		listModel.clear();
 	}
 
 	public boolean getIsSelected() {

@@ -23,6 +23,7 @@ public class FileChooser extends JPanel implements ActionListener{
     JFileChooser fc;
     private File file;
     private String path;
+    private String parentPath;
     private boolean done = false;
     
     public FileChooser() {
@@ -42,6 +43,7 @@ public class FileChooser extends JPanel implements ActionListener{
         if (returnVal == JFileChooser.APPROVE_OPTION) {
            file = fc.getSelectedFile();
            path = file.getAbsolutePath();
+           parentPath = file.getParent();
            //This is where a real application would open the file.
             log.append("Opening: " + file.getName() + "." + newline);
         } else {
@@ -73,5 +75,9 @@ public class FileChooser extends JPanel implements ActionListener{
     
     public boolean isDone(){
     	return done;
+    }
+    
+    public String returnDirectory(){
+    	return parentPath;
     }
 }
