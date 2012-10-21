@@ -449,6 +449,11 @@ public class MainFrame extends JFrame{
 		if(!quickLoad){
 			FileChooser fc = new FileChooser();
 			path = fc.getPath();
+			
+
+			if(path.isEmpty()){
+				return;
+			}
 
 			imageNav.clearAllElements();
 			imageNav.resetPath(fc.returnDirectory());

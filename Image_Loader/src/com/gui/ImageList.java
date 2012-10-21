@@ -36,7 +36,7 @@ public class ImageList extends JPanel {
 			e.printStackTrace();
 		}
 		this.imageList = new JList(imageModel);
-		this.imageList.setVisibleRowCount(6);
+		this.imageList.setVisibleRowCount(12);
 
 		JScrollPane pane = new JScrollPane(imageList);
 
