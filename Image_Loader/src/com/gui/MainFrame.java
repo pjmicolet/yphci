@@ -127,15 +127,15 @@ public class MainFrame extends JFrame{
 		imageNav = new ImageList(currentImagePath);
 
 		menuBar.add(file);
-		menuBar.add(edit);
+//		menuBar.add(edit);
 
 		file.add(newImage);
 		file.add(loadLabel);
 		file.add(saveLabel);
 		file.add(saveAsLabel);
 
-		edit.add(undoLabel);
-		edit.add(redoLabel);
+//		edit.add(undoLabel);
+//		edit.add(redoLabel);
 
 		imagePanel.add(imageLabel);
 		imagePanel.setOpaque(true);	
