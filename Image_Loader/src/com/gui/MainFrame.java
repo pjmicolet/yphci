@@ -100,6 +100,7 @@ public class MainFrame extends JFrame{
 	 */
 	public MainFrame(String imageFilename, ImageLabels labels) {
 		try {
+			this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 			this.labels = labels;
 			this.imageFilename = imageFilename;
 			setupGUI(imageFilename);
@@ -382,6 +383,7 @@ public class MainFrame extends JFrame{
 		  	public void windowClosing(WindowEvent event) {
 		  		//here we exit the program (maybe we should ask if the user really wants to do it?)
 		  		//maybe we also want to store the polygons somewhere? and read them next time
+		  		System.out.println(needToSave + " " + imageLabeler.getNeedToSave());
 		  		if(needToSave || imageLabeler.getNeedToSave()){
 		  			int answer = JOptionPane.showConfirmDialog(null, 
 							"Do you want to save your labels first?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION);
@@ -389,17 +391,27 @@ public class MainFrame extends JFrame{
 						//Call save
 						try{
 							saveLabels(false);
+					  		System.out.println("Exiting...");
+					    	System.exit(0);
 						}
 						catch (Exception e) {
 							// TODO: handle exception
 						}
 					}
+					/*
+					 * Don't want to close the program if they don't wanna
+					 */
+					else if(answer == JOptionPane.CANCEL_OPTION){
+						System.out.println("not closing");
+						return;
+					}
+					else{
+						System.out.println("Not saving is a bad idea");
+				  		System.out.println("Exiting...");
+				    	System.exit(0);
+					}
 		  		}
-		  		System.out.println("Exiting...");
-		    	System.exit(0);
-		  	}
-
-		  	public void windowActivated(WindowEvent event){
+		  		System.exit(0);
 		  	}
 		});
 	}
@@ -426,7 +438,7 @@ public class MainFrame extends JFrame{
 	 */
 	public void loadNewImage(boolean quickLoad, String givenPath) throws Exception{
 		
-		if(needToSave || imageLabeler.getNeedToSave()){
+		if(this.needToSave || imageLabeler.getNeedToSave()){
 			int answer = JOptionPane.showConfirmDialog(null, 
 					"Do you want to save your labels first?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION);
 			if(answer == JOptionPane.YES_OPTION){
@@ -476,7 +488,7 @@ public class MainFrame extends JFrame{
      	resetLabels();
 		loadLabels();
 		imageTool.repaint();
-		needToSave = false;
+		this.needToSave = false;
 		imageLabeler.setNeedToSave(false);
 		
 	}
@@ -578,7 +590,7 @@ public class MainFrame extends JFrame{
 			mappingsOos.writeObject(mappings);
 			mappingsOos.flush();
 			mappingsOos.close();
-			
+			this.needToSave = false;
 			System.out.println("Labels file saved");
 		} catch (Exception e) {
 			e.printStackTrace();

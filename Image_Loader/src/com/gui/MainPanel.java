@@ -99,7 +99,6 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 			g2.setColor(Color.PINK);
 			g2.drawLine(firstPoint.getX(), firstPoint.getY(), lastPoint.getX(), lastPoint.getY());
 		}
-		this.needToSave = true;
 	}
 
 	// Nicer finishLabel function, makes it easier to call outside of the MainPanel class.
@@ -255,6 +254,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 	
 	public void setLabelsList(LabelList labelList){
 		this.labelsList = labelList;
+		this.needToSave = false;
 	}
 	
 	public boolean getNeedToSave(){
