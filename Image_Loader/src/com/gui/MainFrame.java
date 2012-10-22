@@ -43,6 +43,7 @@ public class MainFrame extends JFrame{
 
 	private static final long serialVersionUID = 1L;
 	private static final String mappingsPathname = "./labels/mappings";
+	private static final String labelsFolder = "./labels";
 	
 	private String currentImagePath = "./";
 
@@ -74,6 +75,9 @@ public class MainFrame extends JFrame{
 	private JMenuItem redoLabel = new JMenuItem("Redo");
 
 	private MainPanel imageLabeler = new MainPanel();
+	
+	private JButton labelColorChooser = new JButton("Change label colour");
+	private JButton insideColorChooser = new JButton("Change highlight colour");
 
 	private ImageLabels labels;
 	
@@ -155,7 +159,8 @@ public class MainFrame extends JFrame{
 		nextBackImage.setLayout(new GridLayout(0,2));
 		nextBackImage.add(previousImages);
 		nextBackImage.add(nextImages);
-
+		nextBackImage.add(labelColorChooser);
+		nextBackImage.add(insideColorChooser);
 		
 		/*
 		 * This is is the panel that contains the list of labels and the buttons.
@@ -165,6 +170,8 @@ public class MainFrame extends JFrame{
 		labelTools.add(labelList);
 		labelTools.add(imageNav);
 		labelTools.add(nextBackImage);
+
+
 		
 
 		//setup main window panel
@@ -184,7 +191,9 @@ public class MainFrame extends JFrame{
 		appPanel.add(labelTools);
 		appPanel.add(imageTool);
 		this.setJMenuBar(menuBar);
-
+		
+		
+		this.setResizable(false);
 		//display all the stuff
 		this.pack();	
 
@@ -247,6 +256,22 @@ public class MainFrame extends JFrame{
 				needToSave = true;
 			}
 
+		});
+		
+		labelColorChooser.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				changeLabelColor();
+			}
+		});
+		
+		insideColorChooser.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				changeInsideColor();
+			}
 		});
 
 		editLabel.addActionListener(new ActionListener() {
@@ -417,6 +442,16 @@ public class MainFrame extends JFrame{
 	}
 
 
+	protected void changeInsideColor() {
+		imageLabeler.changeInsideColor();
+	}
+
+
+	protected void changeLabelColor() {
+		imageLabeler.changeLabelColor();
+	}
+
+
 	@Override
 	public void paint(Graphics g){
 		//super.paint(g);
@@ -459,7 +494,12 @@ public class MainFrame extends JFrame{
 		String path;
 		
 		if(!quickLoad){
-			FileChooser fc = new FileChooser();
+			String fc_path;
+			if (imageFilename != "")
+				fc_path = imageFilename.substring(0, imageFilename.lastIndexOf("/") + 1);
+			else 
+				fc_path = "./";
+			FileChooser fc = new FileChooser(fc_path);
 			path = fc.getPath();
 			
 
@@ -566,7 +606,7 @@ public class MainFrame extends JFrame{
 	        String labelsPathname;
 	        System.out.println(mappings.keySet());
 	        if (saveAs || !mappings.containsKey(hashString) ) {
-	        	FileChooser fc = new FileChooser();
+	        	FileChooser fc = new FileChooser(this.labelsFolder);
 				labelsPathname = fc.getPath();
 				if (labelsPathname.isEmpty()) {
 					return;
@@ -656,7 +696,7 @@ public class MainFrame extends JFrame{
 					ois.close();
 			    }
 			    else {
-			    	FileChooser fc = new FileChooser();
+			    	FileChooser fc = new FileChooser(this.labelsFolder);
 					labelsPathname = fc.getPath();
 					this.imageFilename = fc.getPath();
 		        	try {
