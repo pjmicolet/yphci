@@ -130,15 +130,11 @@ public class MainFrame extends JFrame{
 		imageNav = new ImageList(currentImagePath);
 
 		menuBar.add(file);
-//		menuBar.add(edit);
 
 		file.add(newImage);
 		file.add(loadLabel);
 		file.add(saveLabel);
 		file.add(saveAsLabel);
-
-//		edit.add(undoLabel);
-//		edit.add(redoLabel);
 
 		imagePanel.add(imageLabel);
 		imagePanel.setOpaque(true);	
@@ -161,13 +157,22 @@ public class MainFrame extends JFrame{
 		nextBackImage.add(labelColorChooser);
 		nextBackImage.add(insideColorChooser);
 		
+		JPanel intermediatePanel = new JPanel();
+		intermediatePanel.setLayout(new BorderLayout());
+		intermediatePanel.add(labelList, BorderLayout.WEST);
+		
+		JPanel intermediatePanel2 = new JPanel();
+		intermediatePanel2.setLayout(new BorderLayout());
+		intermediatePanel2.add(imageNav, BorderLayout.WEST);
 		/*
 		 * This is is the panel that contains the list of labels and the buttons.
 		 */
 		labelTools.setLayout(new BoxLayout(labelTools, BoxLayout.Y_AXIS));
 		labelTools.add(toolPanel);
-		labelTools.add(labelList);
-		labelTools.add(imageNav);
+//		labelTools.add(labelList);
+//		labelTools.add(imageNav);
+		labelTools.add(intermediatePanel);
+		labelTools.add(intermediatePanel2);
 		labelTools.add(nextBackImage);
 
 
