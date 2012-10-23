@@ -42,6 +42,7 @@ public class MainFrame extends JFrame{
 
 	private static final long serialVersionUID = 1L;
 	private static final String mappingsPathname = "./labels/mappings";
+	private static final String labelsFolder = "./labels";
 	
 	private String currentImagePath = "./";
 
@@ -73,6 +74,9 @@ public class MainFrame extends JFrame{
 	private JMenuItem redoLabel = new JMenuItem("Redo");
 
 	private MainPanel imageLabeler = new MainPanel();
+	
+	private JButton labelColorChooser = new JButton("Change label colour");
+	private JButton insideColorChooser = new JButton("Change highlight colour");
 
 	private ImageLabels labels;
 	
@@ -99,6 +103,7 @@ public class MainFrame extends JFrame{
 	 */
 	public MainFrame(String imageFilename, ImageLabels labels) {
 		try {
+			this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 			this.labels = labels;
 			this.imageFilename = imageFilename;
 			setupGUI(imageFilename);
@@ -125,15 +130,15 @@ public class MainFrame extends JFrame{
 		imageNav = new ImageList(currentImagePath);
 
 		menuBar.add(file);
-		menuBar.add(edit);
+//		menuBar.add(edit);
 
 		file.add(newImage);
 		file.add(loadLabel);
 		file.add(saveLabel);
 		file.add(saveAsLabel);
 
-		edit.add(undoLabel);
-		edit.add(redoLabel);
+//		edit.add(undoLabel);
+//		edit.add(redoLabel);
 
 		imagePanel.add(imageLabel);
 		imagePanel.setOpaque(true);	
@@ -153,7 +158,8 @@ public class MainFrame extends JFrame{
 		nextBackImage.setLayout(new GridLayout(0,2));
 		nextBackImage.add(previousImages);
 		nextBackImage.add(nextImages);
-
+		nextBackImage.add(labelColorChooser);
+		nextBackImage.add(insideColorChooser);
 		
 		/*
 		 * This is is the panel that contains the list of labels and the buttons.
@@ -163,6 +169,8 @@ public class MainFrame extends JFrame{
 		labelTools.add(labelList);
 		labelTools.add(imageNav);
 		labelTools.add(nextBackImage);
+
+
 		
 
 		//setup main window panel
@@ -182,7 +190,9 @@ public class MainFrame extends JFrame{
 		appPanel.add(labelTools);
 		appPanel.add(imageTool);
 		this.setJMenuBar(menuBar);
-
+		
+		
+		this.setResizable(false);
 		//display all the stuff
 		this.pack();	
 
@@ -245,6 +255,22 @@ public class MainFrame extends JFrame{
 				needToSave = true;
 			}
 
+		});
+		
+		labelColorChooser.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				changeLabelColor();
+			}
+		});
+		
+		insideColorChooser.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				changeInsideColor();
+			}
 		});
 
 		editLabel.addActionListener(new ActionListener() {
@@ -381,6 +407,7 @@ public class MainFrame extends JFrame{
 		  	public void windowClosing(WindowEvent event) {
 		  		//here we exit the program (maybe we should ask if the user really wants to do it?)
 		  		//maybe we also want to store the polygons somewhere? and read them next time
+		  		System.out.println(needToSave + " " + imageLabeler.getNeedToSave());
 		  		if(needToSave || imageLabeler.getNeedToSave()){
 		  			int answer = JOptionPane.showConfirmDialog(null, 
 							"Do you want to save your labels first?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION);
@@ -388,19 +415,39 @@ public class MainFrame extends JFrame{
 						//Call save
 						try{
 							saveLabels(false);
+					  		System.out.println("Exiting...");
+					    	System.exit(0);
 						}
 						catch (Exception e) {
 							// TODO: handle exception
 						}
 					}
+					/*
+					 * Don't want to close the program if they don't wanna
+					 */
+					else if(answer == JOptionPane.CANCEL_OPTION){
+						System.out.println("not closing");
+						return;
+					}
+					else{
+						System.out.println("Not saving is a bad idea");
+				  		System.out.println("Exiting...");
+				    	System.exit(0);
+					}
 		  		}
-		  		System.out.println("Exiting...");
-		    	System.exit(0);
-		  	}
-
-		  	public void windowActivated(WindowEvent event){
+		  		System.exit(0);
 		  	}
 		});
+	}
+
+
+	protected void changeInsideColor() {
+		imageLabeler.changeInsideColor();
+	}
+
+
+	protected void changeLabelColor() {
+		imageLabeler.changeLabelColor();
 	}
 
 
@@ -425,7 +472,7 @@ public class MainFrame extends JFrame{
 	 */
 	public void loadNewImage(boolean quickLoad, String givenPath) throws Exception{
 		
-		if(needToSave || imageLabeler.getNeedToSave()){
+		if(this.needToSave || imageLabeler.getNeedToSave()){
 			int answer = JOptionPane.showConfirmDialog(null, 
 					"Do you want to save your labels first?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION);
 			if(answer == JOptionPane.YES_OPTION){
@@ -446,7 +493,12 @@ public class MainFrame extends JFrame{
 		String path;
 		
 		if(!quickLoad){
-			FileChooser fc = new FileChooser();
+			String fc_path;
+			if (imageFilename != "")
+				fc_path = imageFilename.substring(0, imageFilename.lastIndexOf("/") + 1);
+			else 
+				fc_path = "./";
+			FileChooser fc = new FileChooser(fc_path);
 			path = fc.getPath();
 			
 
@@ -475,7 +527,7 @@ public class MainFrame extends JFrame{
      	resetLabels();
 		loadLabels();
 		imageTool.repaint();
-		needToSave = false;
+		this.needToSave = false;
 		imageLabeler.setNeedToSave(false);
 		
 	}
@@ -553,7 +605,7 @@ public class MainFrame extends JFrame{
 	        String labelsPathname;
 	        System.out.println(mappings.keySet());
 	        if (saveAs || !mappings.containsKey(hashString) ) {
-	        	FileChooser fc = new FileChooser();
+	        	FileChooser fc = new FileChooser(this.labelsFolder);
 				labelsPathname = fc.getPath();
 				if (labelsPathname.isEmpty()) {
 					return;
@@ -577,7 +629,7 @@ public class MainFrame extends JFrame{
 			mappingsOos.writeObject(mappings);
 			mappingsOos.flush();
 			mappingsOos.close();
-			
+			this.needToSave = false;
 			System.out.println("Labels file saved");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -643,7 +695,7 @@ public class MainFrame extends JFrame{
 					ois.close();
 			    }
 			    else {
-			    	FileChooser fc = new FileChooser();
+			    	FileChooser fc = new FileChooser(this.labelsFolder);
 					labelsPathname = fc.getPath();
 					this.imageFilename = fc.getPath();
 		        	try {

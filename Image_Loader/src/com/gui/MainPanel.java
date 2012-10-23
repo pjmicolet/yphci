@@ -2,12 +2,15 @@ package com.gui;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+
+import javax.swing.JColorChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -29,6 +32,8 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 	private LabelList labelsList;
 	private Dimension panelSize = new Dimension(800,600);
 	private boolean needToSave;
+	private Color labelColor = Color.BLUE;
+	private Color insideColor = Color.YELLOW;
 
 	public MainPanel() {
 		addMouseListener(this);
@@ -42,7 +47,6 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 	 */
 	public MainPanel(ImageLabels labels, LabelList labelsList, boolean needToSave) throws Exception{
 		this();
-
 		setSize(panelSize);
 		setMinimumSize(panelSize);
 	    setPreferredSize(panelSize);
@@ -50,8 +54,6 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 		this.labels = labels;
 		this.labelsList = labelsList;
 		this.needToSave = needToSave;
-
-	
 	}
 
 	@Override
@@ -59,8 +61,8 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 		super.paintComponent(g);
 
 		Graphics2D g2 = (Graphics2D) g;
-		g.setColor(Color.PINK);
-		g2.setColor(Color.CYAN);
+//		g.setColor(labelColor);
+//		g2.setColor(Color.CYAN);
 		for(PointsLabelPair label : labels.getPoints()) {
 			drawLabel(label, g);
 			finishLabel(label, g);
@@ -68,7 +70,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 		drawLabel(labels.getCurrentLabel(), g);
 		if (labelsList.getIsSelected() && labels.size() != 0) {
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
-			g2.setColor(Color.CYAN);
+			g2.setColor(insideColor);
 			g2.fillPolygon(labels.getPoints().get(labelsList.getSelectedIndex()).getPolygon());
 			g2.drawPolygon(labels.getPoints().get(labelsList.getSelectedIndex()).getPolygon());
 		}
@@ -80,7 +82,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 	 * @param g2
 	 */
 	public void drawLabel(PointsLabelPair label, Graphics g2) {
-		g2.setColor(Color.PINK);
+		g2.setColor(label.getColor());
 		for(int i = 0; i < label.size(); i++) {
 			Point currentLabel = label.get(i);
 			if (i != 0) {
@@ -96,10 +98,9 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 		if (label.size() >= 3) {
 			Point firstPoint = label.get(0);
 			Point lastPoint = label.get(label.size() - 1);
-			g2.setColor(Color.PINK);
+			g2.setColor(label.getColor());
 			g2.drawLine(firstPoint.getX(), firstPoint.getY(), lastPoint.getX(), lastPoint.getY());
 		}
-		this.needToSave = true;
 	}
 
 	// Nicer finishLabel function, makes it easier to call outside of the MainPanel class.
@@ -112,7 +113,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 			Point lastPoint = label.get(label.size() - 1);
 
 			Graphics2D g = (Graphics2D)this.getGraphics();		
-			g.setColor(Color.PINK);
+			g.setColor(label.getColor());
 			g.drawLine(firstPoint.getX(), firstPoint.getY(), lastPoint.getX(), lastPoint.getY());
 		}
 
@@ -146,6 +147,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 
 			}
 		}
+		label.setColor(labelColor);
 		labels.closeCurrentLabel();
 		labelsList.addElement(label.getLabel());
 		
@@ -169,7 +171,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 
 		Graphics2D g = (Graphics2D)this.getGraphics();
 		PointsLabelPair currentLabel = labels.getCurrentLabel();
-		g.setColor(Color.PINK);
+		g.setColor(labelColor);
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			if (currentLabel.size() != 0) {
 				Point firstPoint = currentLabel.get(0);
@@ -255,6 +257,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 	
 	public void setLabelsList(LabelList labelList){
 		this.labelsList = labelList;
+		this.needToSave = false;
 	}
 	
 	public boolean getNeedToSave(){
@@ -264,5 +267,19 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 	public void setNeedToSave(boolean bool){
 		this.needToSave = bool;
 	}
+
+	public void changeLabelColor() {
+		labelColor = JColorChooser.showDialog(null, "Label Color", labelColor);		
+	}
 	
+	public void changeInsideColor() {
+		insideColor = JColorChooser.showDialog(null, "Highlight Color", insideColor);		
+	}
+	
+	@Override
+	public void setEnabled(boolean enable){
+		super.setEnabled(enable);
+		for (Component component : getComponents())
+			component.setEnabled(enable);
+		}
 }

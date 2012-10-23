@@ -26,7 +26,7 @@ public class FileChooser extends JPanel implements ActionListener{
     private String parentPath;
     private boolean done = false;
     
-    public FileChooser() {
+    public FileChooser(String pathname) {
         super(new BorderLayout());
 
         //Create the log first, because the action listeners
@@ -36,7 +36,7 @@ public class FileChooser extends JPanel implements ActionListener{
         log.setEditable(false);
  
         //Create a file chooser
-        fc = new JFileChooser();
+        fc = new JFileChooser(pathname);
  
         int returnVal = fc.showOpenDialog(FileChooser.this);
         

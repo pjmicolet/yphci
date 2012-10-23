@@ -25,6 +25,7 @@ public class ImageList extends JPanel {
 	private int nextFiles = 0;
 	private int actuallyAdded = 0;
 	private String[] paths = new String[4];
+	private ImageIcon[] nextIcons = new ImageIcon[4];
 
 	public ImageList(String path) {
 		this.imageModel = new DefaultListModel();
@@ -49,7 +50,8 @@ public class ImageList extends JPanel {
 		System.out.println(folder);
 		File[] fileList = folder.listFiles();
 		String name = "";
-		if (nextFiles + 3 < fileList.length) {
+		System.out.println("next files " + nextFiles);
+		if ( nextFiles <= fileList.length) {
 			int i = nextFiles;
 			int d = 0;
 
@@ -57,17 +59,24 @@ public class ImageList extends JPanel {
 				name = fileList[i].getName();
 				if (name.endsWith(".jpg") || name.endsWith(".png")
 						|| name.endsWith(".jpeg")) {
+					System.out.println("Added in addImages()");
 					paths[actuallyAdded] = fileList[i].getAbsolutePath();
 					ImageIcon image = new ImageIcon(ImageIO.read(fileList[i])
 							.getScaledInstance(50, 50, 50));
-					imageModel.addElement(image);
+					nextIcons[actuallyAdded] = image;
 					actuallyAdded++;
 				}
 				i++;
 				d++;
 			}
-
-			nextFiles += d;
+			
+			if(actuallyAdded > 0){
+				clearAllElements();
+				for(int image = 0; image < actuallyAdded; image++){
+					imageModel.addElement(nextIcons[image]);
+				}
+				nextFiles += d;
+			}
 			System.out.println(nextFiles);
 			actuallyAdded = 0;
 		}
@@ -91,12 +100,20 @@ public class ImageList extends JPanel {
 					paths[actuallyAdded] = fileList[i].getAbsolutePath();
 					ImageIcon image = new ImageIcon(ImageIO.read(fileList[i])
 							.getScaledInstance(50, 50, 50));
-					imageModel.addElement(image);
+					nextIcons[actuallyAdded] = image;
 					actuallyAdded++;
 				}
 				d ++;
 			}
-			nextFiles -= d;
+			if(actuallyAdded > 0){
+				clearAllElements();
+				for(int image = 0; image < actuallyAdded; image++){
+					imageModel.addElement(nextIcons[image]);
+				}
+
+				nextFiles -= d;
+			}
+			
 
 			System.out.println(nextFiles);
 			actuallyAdded = 0;
@@ -114,7 +131,6 @@ public class ImageList extends JPanel {
 	}
 
 	public void nextImages() {
-		clearAllElements();
 		System.out.println("Yolo " + count);
 		try {
 			addImages();
@@ -126,7 +142,6 @@ public class ImageList extends JPanel {
 
 	public void previousImages() {
 		if(nextFiles > 4){
-		clearAllElements();
 		try {
 			backImages();
 		} catch (IOException e) {
