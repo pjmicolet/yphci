@@ -89,7 +89,7 @@ public class ImageList extends JPanel {
 		String name = "";
 
 		if (nextFiles > 4) {
-			int i = nextFiles;
+			int i = nextFiles -4 ;
 			int d = 0;
 			while (actuallyAdded < 4 && i > 0) {
 				i--;
