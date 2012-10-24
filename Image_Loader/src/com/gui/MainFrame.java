@@ -1,11 +1,13 @@
 package com.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Desktop.Action;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -20,10 +22,12 @@ import java.security.MessageDigest;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
+import javax.swing.AbstractAction;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -32,6 +36,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.undo.UndoManager;
@@ -55,9 +60,9 @@ public class MainFrame extends JFrame{
 
 	private JLabel imageLabel = new JLabel();
 
-	private JButton newLabel = new JButton("New Label");
-	private JButton editLabel = new JButton("Edit Label");
-	private JButton deleteLabel = new JButton("Delete Label");
+	private JButton newLabel = new JButton("(N)ew Label");
+	private JButton editLabel = new JButton("(E)dit Label");
+	private JButton deleteLabel = new JButton("(D)elete Label");
 	private JButton nextImages = new JButton("Next Images");
 	private JButton previousImages = new JButton("Previous Images");
 
@@ -151,6 +156,8 @@ public class MainFrame extends JFrame{
 		toolPanel.add(Box.createGlue());
 		toolPanel.add(labelList);
 		
+		newLabel.setMnemonic(KeyEvent.VK_N);
+		
 		nextBackImage.setLayout(new GridLayout(0,2));
 		nextBackImage.add(previousImages);
 		nextBackImage.add(nextImages);
@@ -169,8 +176,6 @@ public class MainFrame extends JFrame{
 		 */
 		labelTools.setLayout(new BoxLayout(labelTools, BoxLayout.Y_AXIS));
 		labelTools.add(toolPanel);
-//		labelTools.add(labelList);
-//		labelTools.add(imageNav);
 		labelTools.add(intermediatePanel);
 		labelTools.add(intermediatePanel2);
 		labelTools.add(nextBackImage);
@@ -240,11 +245,15 @@ public class MainFrame extends JFrame{
 		
 		this.imageNav.getJList().addListSelectionListener(imageSelection);
 
-		newLabel.addActionListener(new ActionListener() {
+		AbstractAction newLabelAction = new AbstractAction() {
+			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
 				if (labels.getCurrentLabel().size() == 0) {
 					JOptionPane.showMessageDialog(null, 
 							"You can start drawing a new label by clicking on the image", "New Label", JOptionPane.OK_CANCEL_OPTION);					
@@ -255,12 +264,15 @@ public class MainFrame extends JFrame{
 				}
 				else {
 					finishLabel();
+					needToSave = true;
 				}
 
-				needToSave = true;
 			}
-
-		});
+		};
+		
+		newLabel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke('n'), "new label");
+		newLabel.getActionMap().put("new label", newLabelAction);
+		newLabel.addActionListener(newLabelAction);
 		
 		labelColorChooser.addActionListener(new ActionListener() {
 			
@@ -278,7 +290,12 @@ public class MainFrame extends JFrame{
 			}
 		});
 
-		editLabel.addActionListener(new ActionListener() {
+	AbstractAction editAction = new AbstractAction() {
+			
+			/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -292,18 +309,21 @@ public class MainFrame extends JFrame{
 						JOptionPane.showMessageDialog(null, 
 								"Name was successfully changed!", "Edit Label", JOptionPane.INFORMATION_MESSAGE);
 					}
-				}
-				else if (labels.getCurrentLabel().size() < 3) {
-					JOptionPane.showMessageDialog(null, 
-							"You need to draw at least 3 points to finish a label", "New Label", JOptionPane.INFORMATION_MESSAGE);
+
+					needToSave = true;	
 				}
 				else {
-					finishLabel();
-				}
-
-				needToSave = true;
+					JOptionPane.showMessageDialog(null, 
+							"Please select a label!", "Edit Label", JOptionPane.INFORMATION_MESSAGE);
+					}
+			
 			}
-		});
+		};	
+
+		editLabel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke('e'), "edit label");
+		editLabel.getActionMap().put("edit label", editAction);
+		editLabel.addActionListener(editAction);
+		
 
 		loadLabel.addActionListener(new ActionListener() {
 			
@@ -316,10 +336,16 @@ public class MainFrame extends JFrame{
 			}
 		});
 		
-		deleteLabel.addActionListener(new ActionListener() {
+		AbstractAction deleteAction = new AbstractAction() {
+			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
 				if (labelList.getIsSelected()){
 					int index = labelList.getSelectedIndex();
 					System.out.println(index);
@@ -329,10 +355,19 @@ public class MainFrame extends JFrame{
 
 					needToSave = true;
 				}
+				else{
+					JOptionPane.showMessageDialog(null, 
+							"Please select a label!", "Delete Label", JOptionPane.INFORMATION_MESSAGE);
+				}
 
 				imageTool.repaint();
 			}
-		});
+		};
+		
+		deleteLabel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke('d'), "delete label");
+		deleteLabel.getActionMap().put("delete label", deleteAction);
+		deleteLabel.addActionListener(deleteAction);
+		
 		
 		nextImages.addActionListener(new ActionListener() {
 			
@@ -395,16 +430,6 @@ public class MainFrame extends JFrame{
 				catch(Exception e){
 					e.printStackTrace();
 				}
-			}
-		});
-		
-		undoLabel.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-				UndoManager undo = new UndoManager();
-				undo.undo();
 			}
 		});
 		
