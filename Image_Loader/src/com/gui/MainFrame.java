@@ -1,13 +1,14 @@
 package com.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Desktop.Action;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -39,7 +40,6 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.undo.UndoManager;
 
 import com.utils.ImageLabels;
 
@@ -60,28 +60,27 @@ public class MainFrame extends JFrame{
 
 	private JLabel imageLabel = new JLabel();
 
-	private JButton newLabel = new JButton("(N)ew Label");
-	private JButton editLabel = new JButton("(E)dit Label");
-	private JButton deleteLabel = new JButton("(D)elete Label");
-	private JButton nextImages = new JButton("Next Images");
-	private JButton previousImages = new JButton("Previous Images");
+	private JButton newLabel = new JButton("(N)ew Label", new ImageIcon("./res/newlabel.gif"));
+	private JButton editLabel = new JButton("(E)dit Label",new ImageIcon("./res/edit.gif"));
+	private JButton deleteLabel = new JButton("(D)elete Label",new ImageIcon("./res/delete.gif"));
+	private JButton deselectLabel = new JButton("Desele(c)t Label",new ImageIcon("./res/deselect.gif"));
+	private JButton nextImages = new JButton("Ne(x)t Images", new ImageIcon("./res/next.gif"));
+	private JButton previousImages = new JButton("(P)revious Images", new ImageIcon("./res/previous.gif"));
 
 	private JMenuBar menuBar = new JMenuBar();
 
 	private JMenu file = new JMenu("File");
 	private JMenu edit = new JMenu("Edit");
 
-	private JMenuItem newImage = new JMenuItem("New Image");
-	private JMenuItem loadLabel = new JMenuItem("Load Label");
-	private JMenuItem saveLabel = new JMenuItem("Save Label");
-	private JMenuItem saveAsLabel = new JMenuItem("Save As Label");
-	private JMenuItem undoLabel = new JMenuItem("Undo");
-	private JMenuItem redoLabel = new JMenuItem("Redo");
+	private JMenuItem newImage = new JMenuItem("New Image",new ImageIcon("./res/new.gif"));
+	private JMenuItem loadLabel = new JMenuItem("Load Label", new ImageIcon("./res/load.gif"));
+	private JMenuItem saveLabel = new JMenuItem("Save Label", new ImageIcon("./res/save.gif"));
+	private JMenuItem saveAsLabel = new JMenuItem("Save As Label", new ImageIcon("./res/save.gif"));
 
 	private MainPanel imageLabeler = new MainPanel();
 	
-	private JButton labelColorChooser = new JButton("Change label colour");
-	private JButton insideColorChooser = new JButton("Change highlight colour");
+	private JButton labelColorChooser = new JButton("(L)abel colour", new ImageIcon("./res/colour.gif"));
+	private JButton insideColorChooser = new JButton("(H)ighlight colour", new ImageIcon("./res/colour.gif"));
 
 	private ImageLabels labels;
 	
@@ -100,6 +99,8 @@ public class MainFrame extends JFrame{
 	private String currentPath = "";
 
 	private boolean needToSave = false;
+	
+	private int lastClickedIndex = -1;
 	
 	
 	/**
@@ -135,7 +136,21 @@ public class MainFrame extends JFrame{
 		imageNav = new ImageList(currentImagePath);
 
 		menuBar.add(file);
-
+		
+		newImage.setMnemonic(KeyEvent.VK_I);
+		newImage.setAccelerator(KeyStroke.getKeyStroke(
+		        KeyEvent.VK_I, ActionEvent.CTRL_MASK));
+		loadLabel.setMnemonic(KeyEvent.VK_L);
+		loadLabel.setAccelerator(KeyStroke.getKeyStroke(
+		        KeyEvent.VK_L, ActionEvent.CTRL_MASK));
+		saveLabel.setMnemonic(KeyEvent.VK_S);
+		saveLabel.setAccelerator(KeyStroke.getKeyStroke(
+		        KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+		saveAsLabel.setMnemonic(KeyEvent.VK_A);
+		saveAsLabel.setAccelerator(KeyStroke.getKeyStroke(
+		        KeyEvent.VK_A, ActionEvent.CTRL_MASK));
+//		newImage.getAccessibleContext().setAccessibleDescription(
+//		        "This doesn't really do anything");
 		file.add(newImage);
 		file.add(loadLabel);
 		file.add(saveLabel);
@@ -154,9 +169,9 @@ public class MainFrame extends JFrame{
 		toolPanel.add(Box.createGlue());
 		toolPanel.add(deleteLabel);
 		toolPanel.add(Box.createGlue());
+		toolPanel.add(deselectLabel);
+		toolPanel.add(Box.createGlue());
 		toolPanel.add(labelList);
-		
-		newLabel.setMnemonic(KeyEvent.VK_N);
 		
 		nextBackImage.setLayout(new GridLayout(0,2));
 		nextBackImage.add(previousImages);
@@ -211,15 +226,27 @@ public class MainFrame extends JFrame{
 			public void valueChanged(ListSelectionEvent listEvent) {
 		        JList theList = (JList) listEvent.getSource();
 		          	int index = theList.getSelectedIndex();
-		        	if (index >= 0) {
-		            labelList.setIsSelected(true);
-		            labelList.setSelectedIndex(index);
-		            imageLabeler.repaint();
-		        }				
+		          	System.out.println("index: " + index);
+//		        	if (index >= 0) {
+//		        		if((lastClickedIndex == index && index != -1)){
+//
+//		        			labelList.deselect();
+//		        			labelList.setIsSelected(false);
+//		        			lastClickedIndex = -1;
+//		        			imageLabeler.repaint();
+//		        		}
+//		        		else
+//		        		{
+//		        			lastClickedIndex = index;
+		        			labelList.setIsSelected(true);
+		        			labelList.setSelectedIndex(index);
+		        			imageLabeler.repaint();
+//		        		}
+//		        }				
 
 			}
-
 		};
+		
 		this.labelList.getJList().addListSelectionListener(selectionListener);
 
 		ListSelectionListener imageSelection = new ListSelectionListener() {
@@ -270,25 +297,80 @@ public class MainFrame extends JFrame{
 			}
 		};
 		
+		AbstractAction nextImagesAction = new AbstractAction() {
+			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				imageNav.nextImages();
+				imageTool.repaint();
+			}
+		};
+		
+		AbstractAction previousImagesAction = new AbstractAction() {
+			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				imageNav.previousImages();
+				imageTool.repaint();
+			}
+		};
+		
+		AbstractAction labelColorAction = new AbstractAction() {
+			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				changeLabelColor();
+			}
+		};
+		
+		AbstractAction highlightColorAction = new AbstractAction() {
+			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				changeInsideColor();
+			}
+		};
+		
 		newLabel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke('n'), "new label");
 		newLabel.getActionMap().put("new label", newLabelAction);
 		newLabel.addActionListener(newLabelAction);
 		
-		labelColorChooser.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				changeLabelColor();
-			}
-		});
 		
-		insideColorChooser.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				changeInsideColor();
-			}
-		});
+		nextImages.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke('x'), "next images");
+		nextImages.getActionMap().put("next images", nextImagesAction);
+		nextImages.addActionListener(nextImagesAction);
+		
+		previousImages.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke('p'), "previous images");
+		previousImages.getActionMap().put("previous images", previousImagesAction);
+		previousImages.addActionListener(previousImagesAction);
+		
+		labelColorChooser.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke('l'), "label colour");
+		labelColorChooser.getActionMap().put("label colour", labelColorAction);
+		labelColorChooser.addActionListener(labelColorAction);
+		
+		insideColorChooser.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke('h'), "highlight colour");
+		insideColorChooser.getActionMap().put("highlight colour", highlightColorAction);
+		insideColorChooser.addActionListener(highlightColorAction);
 
 	AbstractAction editAction = new AbstractAction() {
 			
@@ -300,14 +382,17 @@ public class MainFrame extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (labelList.getIsSelected()) {
-					String newName = JOptionPane.showInputDialog(null, 
+					String newName = "";
+					newName = JOptionPane.showInputDialog(null, 
 							"Enter a new name for this label", "Edit Label", 1);
-					if (!newName.isEmpty()) {
-						int index = labelList.getSelectedIndex();
-						labels.getPoints().get(index).setLabel(newName);
-						labelList.updateName(newName);
-						JOptionPane.showMessageDialog(null, 
-								"Name was successfully changed!", "Edit Label", JOptionPane.INFORMATION_MESSAGE);
+					if (newName != null) {
+						if(!newName.isEmpty()){
+							int index = labelList.getSelectedIndex();
+							labels.getPoints().get(index).setLabel(newName);
+							labelList.updateName(newName);
+							JOptionPane.showMessageDialog(null, 
+									"Name was successfully changed!", "Edit Label", JOptionPane.INFORMATION_MESSAGE);
+						}
 					}
 
 					needToSave = true;	
@@ -364,9 +449,27 @@ public class MainFrame extends JFrame{
 			}
 		};
 		
+			AbstractAction deselectAction = new AbstractAction() {
+			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				labelList.deselect();
+				imageTool.repaint();
+			}
+		};
+		
 		deleteLabel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke('d'), "delete label");
 		deleteLabel.getActionMap().put("delete label", deleteAction);
 		deleteLabel.addActionListener(deleteAction);
+		
+		deselectLabel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke('c'), "deselect label");
+		deselectLabel.getActionMap().put("deselect label", deselectAction);
+		deselectLabel.addActionListener(deselectAction);
 		
 		
 		nextImages.addActionListener(new ActionListener() {

@@ -71,4 +71,9 @@ public class LabelList extends JPanel {
 	public void updateName(String newName){
 		listModel.set(selectedIndex, newName);
 	}
+	
+	public void deselect(){
+		labelList.clearSelection();
+		isSelected = false;
+	}
 }

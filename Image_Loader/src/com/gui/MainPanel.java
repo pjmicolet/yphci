@@ -71,8 +71,14 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 		if (labelsList.getIsSelected() && labels.size() != 0) {
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
 			g2.setColor(insideColor);
+			try {
 			g2.fillPolygon(labels.getPoints().get(labelsList.getSelectedIndex()).getPolygon());
 			g2.drawPolygon(labels.getPoints().get(labelsList.getSelectedIndex()).getPolygon());
+			}
+			catch (Exception e) {
+				System.out.println("I am suffering quietly");
+			}
+			
 		}
 	}
 
@@ -269,6 +275,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 	}
 
 	public void changeLabelColor() {
+		System.out.println("trolol");
 		labelColor = JColorChooser.showDialog(null, "Label Color", labelColor);		
 	}
 	
