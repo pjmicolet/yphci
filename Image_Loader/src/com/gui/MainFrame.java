@@ -996,7 +996,7 @@ public class MainFrame extends JFrame {
 					labels = (ImageLabels) ois.readObject();
 					ois.close();
 				} // TEST FOR WRONG LABEL FILES
-				catch (FileNotFoundException e1) {
+				catch (Exception e1) {
 					if (!(labelsPathname == "")) {
 						JOptionPane
 								.showMessageDialog(
