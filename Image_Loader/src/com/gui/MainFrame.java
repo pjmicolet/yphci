@@ -72,8 +72,11 @@ public class MainFrame extends JFrame{
 	private JMenuBar menuBar = new JMenuBar();
 
 	private JMenu file = new JMenu("File");
-	private JMenu edit = new JMenu("Edit");
+	private JMenu help = new JMenu("Help");
 
+	private JMenuItem about = new JMenuItem("About",new ImageIcon("./res/info.gif"));
+	private JMenuItem helpSection = new JMenuItem("How to?",new ImageIcon("./res/help.gif"));
+	
 	private JMenuItem newImage = new JMenuItem("New Image",new ImageIcon("./res/new.gif"));
 	private JMenuItem loadLabel = new JMenuItem("Load Label", new ImageIcon("./res/load.gif"));
 	private JMenuItem saveLabel = new JMenuItem("Save Label", new ImageIcon("./res/save.gif"));
@@ -140,6 +143,7 @@ public class MainFrame extends JFrame{
 		imageNav = new ImageList(currentImagePath);
 
 		menuBar.add(file);
+		menuBar.add(help);
 		
 		newImage.setMnemonic(KeyEvent.VK_I);
 		newImage.setAccelerator(KeyStroke.getKeyStroke(
@@ -153,13 +157,26 @@ public class MainFrame extends JFrame{
 		saveAsLabel.setMnemonic(KeyEvent.VK_A);
 		saveAsLabel.setAccelerator(KeyStroke.getKeyStroke(
 		        KeyEvent.VK_A, ActionEvent.CTRL_MASK));
+		
+		helpSection.setMnemonic(KeyEvent.VK_H);
+		helpSection.setAccelerator(KeyStroke.getKeyStroke(
+		        KeyEvent.VK_H, ActionEvent.CTRL_MASK));
+		
+		about.setMnemonic(KeyEvent.VK_B);
+		about.setAccelerator(KeyStroke.getKeyStroke(
+		        KeyEvent.VK_B, ActionEvent.CTRL_MASK));
+		
+		
 //		newImage.getAccessibleContext().setAccessibleDescription(
 //		        "This doesn't really do anything");
 		file.add(newImage);
 		file.add(loadLabel);
 		file.add(saveLabel);
 		file.add(saveAsLabel);
-
+		
+		help.add(helpSection);
+		help.add(about);
+		
 		imagePanel.add(imageLabel);
 		imagePanel.setOpaque(true);	
 
