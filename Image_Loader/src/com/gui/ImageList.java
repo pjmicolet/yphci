@@ -49,12 +49,10 @@ public class ImageList extends JPanel {
 	public void addImages() throws IOException {
 		File folder = new File(path);
 		File[] fileList = folder.listFiles();
-		System.out.println("size: " + fileList.length);
 		String name = "";
 		if ( nextFiles <= fileList.length) {
 			int i = nextFiles;
 //			int d = 0;
-			System.out.println("add nextfiles: " + nextFiles);
 			while (actuallyAdded < 4 && i < fileList.length) {
 				name = fileList[i].getName();
 				if (name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".gif")
@@ -66,16 +64,13 @@ public class ImageList extends JPanel {
 					actuallyAdded++;
 				}
 				i++;
-//				d++;
 			}
-			System.out.println("add before: " + nextFiles);
 			if(actuallyAdded > 0){
 				clearAllElements();
 				for(int image = 0; image < actuallyAdded; image++){
 					imageModel.addElement(nextIcons[image]);
 				}
 				nextFiles = i;
-				System.out.println("adding nextFiles: " + nextFiles);
 			}
 			actuallyAdded = 0;
 			addedLast = true;
@@ -86,12 +81,10 @@ public class ImageList extends JPanel {
 		File folder = new File(path);
 		File[] fileList = folder.listFiles();
 		String name = "";
-		System.out.println("back before: " + nextFiles);
 		if (nextFiles > 0) {
 			int i = nextFiles;
 			int size = nextIcons.length;
 			
-			System.out.println("i: " + i);
 			if (addedLast) {
 				while ( size > 0){
 					i--;
@@ -103,8 +96,6 @@ public class ImageList extends JPanel {
 				}
 				addedLast = false;
 			}
-			System.out.println("i second: " + i);
-			System.out.println("actually: " + actuallyAdded);
 			while (actuallyAdded < 4 && i > 0) {
 				i--;
 				name = fileList[i].getName();
@@ -127,7 +118,6 @@ public class ImageList extends JPanel {
 				nextFiles = i+1;
 			}
 			
-			System.out.println("next end: " + nextFiles);
 			actuallyAdded = 0;
 		}
 	}

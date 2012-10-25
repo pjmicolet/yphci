@@ -36,6 +36,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -61,7 +63,7 @@ public class MainFrame extends JFrame {
 
 	private JLabel imageLabel = new JLabel();
 
-	private JButton newLabel = new JButton("(N)ew Label", new ImageIcon(
+	private JButton newLabel = new JButton("(F)inish Label", new ImageIcon(
 			"./res/newlabel.gif"));
 	private JButton editLabel = new JButton("(E)dit Label", new ImageIcon(
 			"./res/edit.gif"));
@@ -393,7 +395,7 @@ public class MainFrame extends JFrame {
 		};
 
 		newLabel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-				KeyStroke.getKeyStroke('n'), "new label");
+				KeyStroke.getKeyStroke('f'), "new label");
 		newLabel.getActionMap().put("new label", newLabelAction);
 		newLabel.addActionListener(newLabelAction);
 
@@ -464,7 +466,7 @@ public class MainFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				loadLabels();
+				loadLabels(true);
 				imageTool.repaint();
 			}
 		});
@@ -495,7 +497,7 @@ public class MainFrame extends JFrame {
 				imageTool.repaint();
 			}
 		};
-		
+
 		AbstractAction cancelAction = new AbstractAction() {
 
 			/**
@@ -535,31 +537,30 @@ public class MainFrame extends JFrame {
 		cancelLabel.getActionMap().put("cancel label", cancelAction);
 		cancelLabel.addActionListener(cancelAction);
 
-		
 		deselectLabel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
 				KeyStroke.getKeyStroke('c'), "deselect label");
 		deselectLabel.getActionMap().put("deselect label", deselectAction);
 		deselectLabel.addActionListener(deselectAction);
 
-//		nextImages.addActionListener(new ActionListener() {
-//
-//			@Override
-//			public void actionPerformed(ActionEvent arg0) {
-//				imageNav.nextImages();
-//				imageTool.repaint();
-//			}
-//		});
+		// nextImages.addActionListener(new ActionListener() {
+		//
+		// @Override
+		// public void actionPerformed(ActionEvent arg0) {
+		// imageNav.nextImages();
+		// imageTool.repaint();
+		// }
+		// });
 
-//		previousImages.addActionListener(new ActionListener() {
-//
-//			@Override
-//			public void actionPerformed(ActionEvent arg0) {
-//
-//				imageNav.previousImages();
-//				imageTool.repaint();
-//
-//			}
-//		});
+		// previousImages.addActionListener(new ActionListener() {
+		//
+		// @Override
+		// public void actionPerformed(ActionEvent arg0) {
+		//
+		// imageNav.previousImages();
+		// imageTool.repaint();
+		//
+		// }
+		// });
 
 		newImage.addActionListener(new ActionListener() {
 
@@ -585,9 +586,11 @@ public class MainFrame extends JFrame {
 				try {
 					// Tell load new image this isn't a quick load and give it
 					// an empty string as getting the path will be done later.
-					JOptionPane.showMessageDialog(null,
-							"By French Paul and Bulgarian Yordan", "About",
-							JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane
+							.showMessageDialog(
+									null,
+									"Design and implementation by Paul-Jules Micolet and Yordan Petrov",
+									"About", JOptionPane.INFORMATION_MESSAGE);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -603,7 +606,39 @@ public class MainFrame extends JFrame {
 				try {
 					// Tell load new image this isn't a quick load and give it
 					// an empty string as getting the path will be done later.
-					loadNewImage(true, defaultImg);
+					// loadNewImage(true, defaultImg);
+					JTextArea msg = new JTextArea(
+							"Shortcuts:\n \nOpen New Image -> Ctrl + I\n"
+									+ "Load labels file -> Ctrl + L\n"
+									+ "Save labels file -> Ctrl + S\n"
+									+ "Save labels file As -> Ctrl + A\n"
+									+ "Help Section -> Ctrl + H\n"
+									+ "About -> Ctrl + B\n"
+									+ "Finish current label -> f\n"
+									+ "Edit selected label -> e\n"
+									+ "Delete selected label -> d\n"
+									+ "Cancel drawing current label -> a\n"
+									+ "De-select selected label -> c\n"
+									+ "Display previous 4 images in the current directory -> p\n"
+									+ "Display next 4 images in the current directory -> x\n"
+									+ "Change label colour -> l\n"
+									+ "Change highlight colour -> h\n"
+									+ "\n"
+									+ "Useful tip:\n"
+									+ "You can resize the label polygons after creation by "
+									+ "clicking on a vertex and dragging in the desired direction.\n"
+									+ "\n"
+									+ "Supported formats: .jpg, .jpeg, .png, .gif"
+									+ "");
+					msg.setLineWrap(true);
+					msg.setWrapStyleWord(true);
+					msg.setEditable(false);
+					msg.setSize(400, 800);
+
+					JScrollPane scrollPane = new JScrollPane(msg);
+
+					JOptionPane.showMessageDialog(null, scrollPane, "Help",
+							JOptionPane.INFORMATION_MESSAGE);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -762,7 +797,7 @@ public class MainFrame extends JFrame {
 		imageIcon.setImage(img);
 		imageLabel.setIcon(imageIcon);
 		resetLabels();
-		loadLabels();
+		loadLabels(false);
 		imageTool.repaint();
 		this.needToSave = false;
 		imageLabeler.setNeedToSave(false);
@@ -879,60 +914,42 @@ public class MainFrame extends JFrame {
 	/**
 	 * Loads the labels and makes sure everything is nice and clean...ish
 	 */
-	public void loadLabels() {
+	public void loadLabels(boolean clickedFromMenu) {
+		String labelsPathname = "";
 		try {
 			FileInputStream map;
-			try {
-				map = new FileInputStream(mappingsPathname);
-				ObjectInputStream mapOis = new ObjectInputStream(map);
-				mappings = (HashMap<String, String>) mapOis.readObject();
-			} catch (FileNotFoundException exc) {
-				createNewMappings();
-				map = new FileInputStream(mappingsPathname);
-				ObjectInputStream mapOis = new ObjectInputStream(map);
-				mappings = (HashMap<String, String>) mapOis.readObject();
-			}
+			if (!clickedFromMenu) {
+				try {
+					map = new FileInputStream(mappingsPathname);
+					ObjectInputStream mapOis = new ObjectInputStream(map);
+					mappings = (HashMap<String, String>) mapOis.readObject();
+				} catch (FileNotFoundException exc) {
+					createNewMappings();
+					map = new FileInputStream(mappingsPathname);
+					ObjectInputStream mapOis = new ObjectInputStream(map);
+					mappings = (HashMap<String, String>) mapOis.readObject();
+				}
 
-			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-			File input = new File(this.imageFilename);
-			BufferedImage buffImg = ImageIO.read(input);
-			ImageIO.write(buffImg, "png", outputStream);
-			byte[] data = outputStream.toByteArray();
+				File input = new File(this.imageFilename);
+				BufferedImage buffImg = ImageIO.read(input);
+				ImageIO.write(buffImg, "png", outputStream);
+				byte[] data = outputStream.toByteArray();
 
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			md.update(data);
-			byte[] hash = md.digest();
+				MessageDigest md = MessageDigest.getInstance("MD5");
+				md.update(data);
+				byte[] hash = md.digest();
 
-			String hashString = returnHex(hash);
-			String labelsPathname;
-			if (mappings.containsKey(hashString)) {
-				labelsPathname = mappings.get(hashString);
-			} else {
-				labelsPathname = "";
-			}
+				String hashString = returnHex(hash);
+				if (mappings.containsKey(hashString)) {
+					labelsPathname = mappings.get(hashString);
+				} else {
+					labelsPathname = "";
+				}
 
-			FileInputStream fis;
-			try {
-//				if (labelsPathname.isEmpty()) {
-//					FileChooser fc = new FileChooser(this.labelsFolder);
-//					labelsPathname = fc.getPath();
-//					this.imageFilename = fc.getPath();
-//					try {
-//						fis = new FileInputStream(labelsPathname);
-//						ObjectInputStream ois = new ObjectInputStream(fis);
-//						labels = (ImageLabels) ois.readObject();
-//						ois.close();
-//					} // TEST FOR WRONG LABEL FILES
-//					catch (FileNotFoundException e1) {
-//						JOptionPane
-//								.showMessageDialog(
-//										null,
-//										"There was a problem loading your labels file. Creating a new one..",
-//										"Warning",
-//										JOptionPane.INFORMATION_MESSAGE);
-//					}
-//				} else {
+				FileInputStream fis;
+				try {
 					fis = new FileInputStream(labelsPathname);
 					String options[] = new String[] { "Yes",
 							"No, I will load it myself",
@@ -966,38 +983,30 @@ public class MainFrame extends JFrame {
 											JOptionPane.INFORMATION_MESSAGE);
 						}
 					}
-//				}
-			} catch (FileNotFoundException e) {
-//				FileChooser fc = new FileChooser(this.labelsFolder);
-//				labelsPathname = fc.getPath();
-//				if (!labelsPathname.isEmpty()) {
-//					this.imageFilename = fc.getPath();
-//					try {
-//						fis = new FileInputStream(labelsPathname);
-//						ObjectInputStream ois = new ObjectInputStream(fis);
-//						labels = (ImageLabels) ois.readObject();
-//						ois.close();
-//					} // TEST FOR WRONG LABEL FILES
-//					catch (FileNotFoundException e1) {
-//						JOptionPane
-//								.showMessageDialog(
-//										null,
-//										"There was a problem loading your labels file. Creating a new one..",
-//										"Warning",
-//										JOptionPane.INFORMATION_MESSAGE);
-//						labels = new ImageLabels();
-//					}
-//				}
-//					else {
-//						JOptionPane
-//						.showMessageDialog(
-//								null,
-//								"Loading an empty label file..",
-//								"Warning",
-//								JOptionPane.INFORMATION_MESSAGE);
-//					}
+					// }
+				} catch (FileNotFoundException e) {
+				}
+			} else {
+				FileChooser fc = new FileChooser(this.labelsFolder);
+				labelsPathname = fc.getPath();
+				this.imageFilename = fc.getPath();
+				try {
+					FileInputStream fis = new FileInputStream(labelsPathname);
+					ObjectInputStream ois = new ObjectInputStream(fis);
+					labels = (ImageLabels) ois.readObject();
+					ois.close();
+				} // TEST FOR WRONG LABEL FILES
+				catch (FileNotFoundException e1) {
+					if (!(labelsPathname == "")) {
+						JOptionPane
+								.showMessageDialog(
+										null,
+										"There was a problem loading your labels file. Creating a new one..",
+										"Warning",
+										JOptionPane.INFORMATION_MESSAGE);
+					}
+				}
 			}
-
 			this.currentPath = labelsPathname;
 
 			imageLabeler.setLabels(labels);
