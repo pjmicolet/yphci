@@ -1,9 +1,9 @@
 package com.utils;
 
+import java.awt.Color;
 import java.awt.Polygon;
 import java.io.Serializable;
 import java.util.ArrayList;
-import com.utils.Point;
 
 public class PointsLabelPair implements Serializable{
 
@@ -15,6 +15,7 @@ public class PointsLabelPair implements Serializable{
 	private Polygon polygon;
 	private String label;
 	private Point lastPoint;
+	private Color color;
 
 	public PointsLabelPair() {
 		this.points = new ArrayList<Point>();
@@ -76,5 +77,14 @@ public class PointsLabelPair implements Serializable{
 			}
 		}
 		return 0;
+	}
+	
+	public void setColor(Color col) {
+		this.color = col;
+	}
+
+	public Color getColor() {
+		// TODO Auto-generated method stub
+		return color;
 	}
 }

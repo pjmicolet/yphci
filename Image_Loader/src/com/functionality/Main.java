@@ -10,7 +10,6 @@ public class Main {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		ImageLabels labels = new ImageLabels();
-
 		String path = "./res/help.jpeg";
 		MainFrame mainFrame = new MainFrame(path, labels);
 		mainFrame.setVisible(true);

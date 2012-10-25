@@ -31,7 +31,6 @@ public class LabelList extends JPanel {
 
 	public void addElement(String label) {
 		listModel.addElement(label);
-		System.out.println("Size: " + listModel.size());
 	}
 	
 	public void addAllElements(ImageLabels labels){
@@ -45,9 +44,7 @@ public class LabelList extends JPanel {
 	}
 	
 	public void deleteAllElements(){
-		for(int i =0; i < listModel.size(); i++){
-			listModel.remove(i);
-		}
+		listModel.clear();
 	}
 
 	public boolean getIsSelected() {
@@ -72,5 +69,10 @@ public class LabelList extends JPanel {
 	
 	public void updateName(String newName){
 		listModel.set(selectedIndex, newName);
+	}
+	
+	public void deselect(){
+		labelList.clearSelection();
+		isSelected = false;
 	}
 }

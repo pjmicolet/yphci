@@ -1,16 +1,22 @@
 package com.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.filechooser.FileView;
+import javax.swing.plaf.metal.MetalIconFactory;
 
 public class FileChooser extends JPanel implements ActionListener{
 	/**
@@ -23,11 +29,12 @@ public class FileChooser extends JPanel implements ActionListener{
     JFileChooser fc;
     private File file;
     private String path;
+    private String parentPath;
     private boolean done = false;
     
-    public FileChooser() {
+    public FileChooser(String pathname) {
         super(new BorderLayout());
- 
+
         //Create the log first, because the action listeners
         //need to refer to it.
         log = new JTextArea(5,20);
@@ -35,19 +42,20 @@ public class FileChooser extends JPanel implements ActionListener{
         log.setEditable(false);
  
         //Create a file chooser
-        fc = new JFileChooser();
- 
+        fc = new JFileChooser(pathname);
+        fc.setAccessory(new ImagePreview(fc));
+
         int returnVal = fc.showOpenDialog(FileChooser.this);
         
         if (returnVal == JFileChooser.APPROVE_OPTION) {
            file = fc.getSelectedFile();
            path = file.getAbsolutePath();
+           parentPath = file.getParent();
            //This is where a real application would open the file.
             log.append("Opening: " + file.getName() + "." + newline);
         } else {
         	//If we cancel just set the path to be empty.
         	path = "";
-        	System.out.println("YOLO");
         	log.append("Open command cancelled by user." + newline);
         }
         log.setCaretPosition(log.getDocument().getLength());
@@ -73,5 +81,9 @@ public class FileChooser extends JPanel implements ActionListener{
     
     public boolean isDone(){
     	return done;
+    }
+    
+    public String returnDirectory(){
+    	return parentPath;
     }
 }
