@@ -7,8 +7,6 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -20,8 +18,10 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.security.MessageDigest;
+import java.util.Arrays;
 import java.util.HashMap;
 
+import javax.activation.MimetypesFileTypeMap;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Box;
@@ -48,6 +48,8 @@ public class MainFrame extends JFrame{
 	private static final long serialVersionUID = 1L;
 	private static final String mappingsPathname = "./labels/mappings";
 	private static final String labelsFolder = "./labels";
+	
+	private final String defaultImg =  "./res/help.jpeg";
 	
 	private String currentImagePath = "./";
 
@@ -101,6 +103,8 @@ public class MainFrame extends JFrame{
 	private boolean needToSave = false;
 	
 	private int lastClickedIndex = -1;
+	
+	private String imgExts[] = {"jpg", "jpeg", "png", "gif"};
 	
 	
 	/**
@@ -638,7 +642,14 @@ public class MainFrame extends JFrame{
 			if(path.isEmpty()){
 				return;
 			}
-
+			int lastDot = path.lastIndexOf('.');
+	        String extension = path.substring(lastDot+1);        
+	        System.out.println("ext: " + extension);
+	        if (!Arrays.asList(imgExts).contains(extension)) {
+	        	JOptionPane.showMessageDialog(null, 
+				"An error occured while loading your image! Loading default help screen..", "Error", JOptionPane.ERROR_MESSAGE);
+	        	return;
+	        }
 			imageNav.clearAllElements();
 			imageNav.resetPath(fc.returnDirectory());
 		}
@@ -651,6 +662,15 @@ public class MainFrame extends JFrame{
 		if(path.isEmpty()){
 			return;
 		}
+//		File input = new File(path);
+//		String mimetype = new MimetypesFileTypeMap().getContentType(input);
+//        String type = mimetype.split("/")[0];
+//        System.out.println(type);
+//        if(!type.substring(0,5).equalsIgnoreCase("image")) {
+//        	JOptionPane.showMessageDialog(null, 
+//					"An error occured while loading your image! Loading default help screen..", "Error", JOptionPane.ERROR_MESSAGE);
+//        	return;
+//        }
 		this.imageFilename = path;
 		imageIcon = new ImageIcon(imageFilename);
 		Image img = imageIcon.getImage();
@@ -662,7 +682,6 @@ public class MainFrame extends JFrame{
 		imageTool.repaint();
 		this.needToSave = false;
 		imageLabeler.setNeedToSave(false);
-		
 	}
 	
 
@@ -721,12 +740,12 @@ public class MainFrame extends JFrame{
 			}
 			
 			
-			File input = new File(this.imageFilename);
-	        
-	        BufferedImage buffImg = ImageIO.read(input);
+			File input = new File(this.imageFilename);     
+		    BufferedImage buffImg = ImageIO.read(input);
 	        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	        ImageIO.write(buffImg, "png", outputStream);
+        	ImageIO.write(buffImg, "png", outputStream);
 	        byte[] data = outputStream.toByteArray();
+
 
 	        System.out.println("Start MD5 Digest");
 	        MessageDigest md = MessageDigest.getInstance("MD5");
@@ -763,6 +782,7 @@ public class MainFrame extends JFrame{
 			mappingsOos.flush();
 			mappingsOos.close();
 			this.needToSave = false;
+			imageLabeler.setNeedToSave(false);
 			System.out.println("Labels file saved");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -796,10 +816,11 @@ public class MainFrame extends JFrame{
 			}
 			
 			
-			File input = new File(this.imageFilename);
-	        
-	        BufferedImage buffImg = ImageIO.read(input);
+			
 	        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+	        File input = new File(this.imageFilename);
+	        BufferedImage buffImg = ImageIO.read(input);
 	        ImageIO.write(buffImg, "png", outputStream);
 	        byte[] data = outputStream.toByteArray();
 
@@ -809,6 +830,7 @@ public class MainFrame extends JFrame{
 	        byte[] hash = md.digest();
 
 	        String hashString = returnHex(hash);
+	        System.out.println(hashString);
 	        String labelsPathname;
 	        if (mappings.containsKey(hashString)) {
 		        labelsPathname = mappings.get(hashString);
@@ -820,14 +842,19 @@ public class MainFrame extends JFrame{
 	        FileInputStream fis;
 	        try {
 	        	fis = new FileInputStream(labelsPathname);
-	        	int answer = JOptionPane.showConfirmDialog(null, 
-						"We have detected a labels file for this image. Do you want to load it?", "Warning", JOptionPane.YES_NO_OPTION);
-			    if (answer == JOptionPane.YES_OPTION) {
+	        	String options[] = new String[] {"Yes", "No, I will load it myself", "No, I don't want to load any labels"};
+	        	String message = "We have detected a labels file for this image. Do you want to load it?";
+	        	JLabel messageLabel = new JLabel(message,  JLabel.CENTER);
+	        	int answer = JOptionPane.showOptionDialog(null, 
+						messageLabel, "Warning", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE,
+				        null, options, options[0]);
+	        	System.out.println("answer: " + answer);
+			    if (answer == 0) {
 			    	ObjectInputStream ois = new ObjectInputStream(fis);
 					labels = (ImageLabels) ois.readObject();
 					ois.close();
 			    }
-			    else {
+			    else if (answer == 1){
 			    	FileChooser fc = new FileChooser(this.labelsFolder);
 					labelsPathname = fc.getPath();
 					this.imageFilename = fc.getPath();
@@ -858,6 +885,7 @@ public class MainFrame extends JFrame{
 		catch (Exception e){
 			e.printStackTrace();
 		}
+//		this.pack();
 	}
 
 

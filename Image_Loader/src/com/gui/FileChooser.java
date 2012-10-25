@@ -1,16 +1,22 @@
 package com.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.filechooser.FileView;
+import javax.swing.plaf.metal.MetalIconFactory;
 
 public class FileChooser extends JPanel implements ActionListener{
 	/**
@@ -37,7 +43,8 @@ public class FileChooser extends JPanel implements ActionListener{
  
         //Create a file chooser
         fc = new JFileChooser(pathname);
- 
+        fc.setAccessory(new ImagePreview(fc));
+
         int returnVal = fc.showOpenDialog(FileChooser.this);
         
         if (returnVal == JFileChooser.APPROVE_OPTION) {
