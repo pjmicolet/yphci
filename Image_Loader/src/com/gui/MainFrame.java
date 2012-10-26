@@ -65,7 +65,7 @@ public class MainFrame extends JFrame {
 
 	private JButton newLabel = new JButton("(F)inish Label", new ImageIcon(
 			"./res/newlabel.gif"));
-	private JButton editLabel = new JButton("(E)dit Label", new ImageIcon(
+	private JButton editLabel = new JButton("(E)dit Label Name", new ImageIcon(
 			"./res/edit.gif"));
 	private JButton deleteLabel = new JButton("(D)elete Label", new ImageIcon(
 			"./res/delete.gif"));
@@ -137,6 +137,7 @@ public class MainFrame extends JFrame {
 			this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 			this.labels = labels;
 			this.imageFilename = imageFilename;
+			this.setTitle("Labeler Pro");
 			setupGUI(imageFilename);
 		} catch (Exception e) {
 			System.err.println("Image: " + imageFilename);
@@ -394,6 +395,7 @@ public class MainFrame extends JFrame {
 			}
 		};
 
+		
 		newLabel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
 				KeyStroke.getKeyStroke('f'), "new label");
 		newLabel.getActionMap().put("new label", newLabelAction);
@@ -403,6 +405,7 @@ public class MainFrame extends JFrame {
 				KeyStroke.getKeyStroke('x'), "next images");
 		nextImages.getActionMap().put("next images", nextImagesAction);
 		nextImages.addActionListener(nextImagesAction);
+
 
 		previousImages.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
 				KeyStroke.getKeyStroke('p'), "previous images");

@@ -95,7 +95,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 				Point prevLabel = label.get(i - 1);
 				g2.drawLine(prevLabel.getX(), prevLabel.getY(), currentLabel.getX(), currentLabel.getY());
 			}
-			g2.setColor(this.labelColor);
+			g2.setColor(label.getColor());
 			g2.fillOval(currentLabel.getX() - 5, currentLabel.getY() - 5, 5, 5);
 		}
 	}
@@ -179,6 +179,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 
 		Graphics2D g = (Graphics2D)this.getGraphics();
 		PointsLabelPair currentLabel = labels.getCurrentLabel();
+		currentLabel.setColor(labelColor);
 		g.setColor(labelColor);
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			if (currentLabel.size() != 0) {
@@ -277,6 +278,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 
 	public void changeLabelColor() {
 		labelColor = JColorChooser.showDialog(null, "Label Color", labelColor);
+		labels.getCurrentLabel().setColor(labelColor);
 		repaint();
 	}
 	
