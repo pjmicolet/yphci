@@ -87,4 +87,5 @@ public class PointsLabelPair implements Serializable{
 		// TODO Auto-generated method stub
 		return color;
 	}
+
 }

@@ -431,12 +431,14 @@ public class MainFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (labelList.getIsSelected()) {
+					int index = labelList.getSelectedIndex();
+					String defaultName = labels.getPoints().get(index).getLabel();
 					String newName = "";
 					newName = JOptionPane.showInputDialog(null,
-							"Enter a new name for this label", "Edit Label", 1);
+							"Enter a new name for this label", "Edit Label", 1, null, null, defaultName).toString();
 					if (newName != null) {
 						if (!newName.isEmpty()) {
-							int index = labelList.getSelectedIndex();
+							index = labelList.getSelectedIndex();
 							labels.getPoints().get(index).setLabel(newName);
 							labelList.updateName(newName);
 							JOptionPane.showMessageDialog(null,

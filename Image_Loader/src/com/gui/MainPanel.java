@@ -127,7 +127,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 
 		if (isCurrentLabel) {
 			String labelName = JOptionPane.showInputDialog(null,
-					"Enter object's label: ", "HCI FTW", 1);
+					"Enter object's label: ", "Enter Label", 1);
 			boolean complete = false;
 			while (!complete) {
 
@@ -276,7 +276,8 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 	}
 
 	public void changeLabelColor() {
-		labelColor = JColorChooser.showDialog(null, "Label Color", labelColor);		
+		labelColor = JColorChooser.showDialog(null, "Label Color", labelColor);
+		repaint();
 	}
 	
 	public void changeInsideColor() {
